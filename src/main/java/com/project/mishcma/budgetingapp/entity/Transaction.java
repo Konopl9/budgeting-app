@@ -1,6 +1,7 @@
-package com.project.mishcma.budgetingapp.transaction;
+package com.project.mishcma.budgetingapp.entity;
 
-import com.project.mishcma.budgetingapp.category.Category;
+import com.project.mishcma.budgetingapp.entity.Category;
+import com.project.mishcma.budgetingapp.entity.TransactionType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

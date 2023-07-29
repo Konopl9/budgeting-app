@@ -1,11 +1,11 @@
 package com.project.mishcma.budgetingapp.loader;
 
-import com.project.mishcma.budgetingapp.category.Category;
-import com.project.mishcma.budgetingapp.category.CategoryRepository;
-import com.project.mishcma.budgetingapp.category.CategoryType;
-import com.project.mishcma.budgetingapp.transaction.Transaction;
-import com.project.mishcma.budgetingapp.transaction.TransactionRepository;
-import com.project.mishcma.budgetingapp.transaction.TransactionType;
+import com.project.mishcma.budgetingapp.entity.Category;
+import com.project.mishcma.budgetingapp.repository.CategoryRepository;
+import com.project.mishcma.budgetingapp.entity.CategoryType;
+import com.project.mishcma.budgetingapp.entity.Transaction;
+import com.project.mishcma.budgetingapp.repository.TransactionRepository;
+import com.project.mishcma.budgetingapp.entity.TransactionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;

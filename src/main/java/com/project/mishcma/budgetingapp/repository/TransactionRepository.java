@@ -1,8 +1,7 @@
-package com.project.mishcma.budgetingapp.transaction;
+package com.project.mishcma.budgetingapp.repository;
 
+import com.project.mishcma.budgetingapp.entity.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.nio.file.LinkOption;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 }

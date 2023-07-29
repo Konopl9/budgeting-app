@@ -1,4 +1,4 @@
-package com.project.mishcma.budgetingapp.category;
+package com.project.mishcma.budgetingapp.entity;
 
 public enum CategoryType {
     FOOD,
