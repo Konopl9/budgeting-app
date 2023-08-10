@@ -3,13 +3,11 @@ package com.project.mishcma.budgetingapp.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Entity
 @Table
 @Getter
 @Setter
-@ToString
 public class Category {
 
     @Id
@@ -18,5 +16,10 @@ public class Category {
 
     @Enumerated
     private CategoryType name;
+
+    @Override
+    public String toString() {
+        return name.name();
+    }
 
 }

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<tr th:each="transaction: ${transactions}">
+    <td th:text="${transaction.id}"/>
+    <td th:text="${transaction.type}"/>
+    <td th:text="${transaction.amount}"/>
+    <td th:text="${transaction.category.getName()}"/>
+    <a th:href="@{/deleteTransaction(id=${transaction.id})}" class="btn btn-danger">Delete</a>
+    <br/>
+</tr>
+<label for="type">Add new transaction:</label>
+<a th:href="@{/addTransaction}" class="btn btn-danger"></a>
+<div>
+
+</div>
+
+<form method="post" th:action="@{/}">
+    <div style="margin-bottom: 10px;">
+        <label for="type">Type:</label>
+        <input type="text" id="type" name="type">
+    </div>
+
+    <div style="margin-bottom: 10px;">
+        <label for="amount">Amount:</label>
+        <input type="text" id="amount" name="amount" required>
+    </div>
+
+    <div style="margin-bottom: 10px;">
+        <label for="category">Category:</label>
+        <input type="text" id="category" name="category">
+    </div>
+
+    <div style="margin-bottom: 10px;">
+        <label for="date">Date:</label>
+        <input type="date" id="date" name="date">
+    </div>
+
+    <button type="submit">Add Transaction</button>
+</form>
+</body>
+</html>
