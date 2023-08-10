@@ -45,7 +45,7 @@ public class Initializer {
             }
         }
 
-        Optional<Category> categoryTest = categoryRepository.findById(1L);
+        Category categoryTest = categoryRepository.findAll().get(0);
 
         // Check if transactions are already populated in the database
         if (transactionRepository.count() != 5) {
@@ -55,7 +55,7 @@ public class Initializer {
                 Transaction transaction = new Transaction();
                 transaction.setAmount(100.0 * i); // Assuming the amount is 100 * i for simplicity
                 transaction.setType(TransactionType.INCOME); // Assuming all transactions are of type INCOME for simplicity
-                transaction.setCategory(categoryTest.get());
+                transaction.setCategory(categoryTest);
                 transactionRepository.save(transaction);
             }
         }

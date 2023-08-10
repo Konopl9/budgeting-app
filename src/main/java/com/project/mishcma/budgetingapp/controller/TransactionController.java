@@ -27,9 +27,11 @@ public class TransactionController {
         return "transactions";
     }
 
-    @GetMapping(value = "/showCreateForm")
-    public String showCreateForm() {
-        return "create-transaction";
+    @PostMapping(value = "/createTransaction")
+    public String createTransaction(@ModelAttribute Transaction transaction, Model model) {
+        transactionService.saveTransaction(transaction);
+        model.addAttribute("transactions", transactionService.getTransactions());
+        return "transactions :: transactions-list";
     }
 
     @GetMapping(value = "/showUpdateForm/{id}")
@@ -37,12 +39,6 @@ public class TransactionController {
         Transaction selectedTransaction = transactionService.findTransactionById(id);
         model.addAttribute("transaction", selectedTransaction);
         return "update-transaction";
-    }
-
-    @PostMapping(value = "/createTransaction")
-    public String createTransaction(Transaction transaction, Model model) {
-        transactionService.saveTransaction(transaction);
-        return "redirect:/showAllTransactions";
     }
 
     @PostMapping("/reset")
