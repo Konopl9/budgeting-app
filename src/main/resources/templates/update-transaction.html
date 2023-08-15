@@ -2,26 +2,43 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Transactions</title>
+    <title>Update transaction</title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link th:href="@{/webjars/bootstrap/5.3.1/css/bootstrap.min.css}" rel="stylesheet"/>
-    <script th:src="@{/webjars/bootstrap/5.3.1/js/bootstrap.bundle.min.js}" defer></script>
-    <script th:src="@{/webjars/htmx.org/1.9.4/dist/htmx.min.js}" defer></script>
 </head>
 <body>
-<h1>Update Transaction</h1>
-<form method="post" id="transaction-form" th:action="@{/updateTransaction}" th:object="${transaction}">
-    <input type="hidden" id="id" name="id" th:field="*{id}">
-    <label for="type">Type:</label>
-    <input type="text" id="type" name="type" th:field="*{type}">
-    <label for="amount">Amount:</label>
-    <input type="number" id="amount" name="amount" required th:field="*{amount}">
-    <label for="category">Category:</label>
-    <input type="text" id="category" name="category" th:field="*{category.name}">
-    <label for="date">Date:</label>
-    <input type="date" id="date" name="date" th:field="*{date}">
-    <button type="submit">Update</button>
-</form>
+<main class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h2 class="mb-4">Update Transaction</h2>
+            <form method="post" id="transaction-form" th:action="@{/updateTransaction}" th:object="${transaction}">
+                <input type="hidden" id="id" name="id" th:field="*{id}">
+                <div class="mb-3">
+                    <label for="type" class="form-label">Type:</label>
+                    <input type="text" id="type" name="type" class="form-control" th:field="*{type}">
+                </div>
+                <div class="mb-3">
+                    <label for="amount" class="form-label">Amount:</label>
+                    <input type="number" id="amount" name="amount" required class="form-control" th:field="*{amount}">
+                </div>
+                <div class="mb-3">
+                    <label for="category" class="form-label">Category:</label>
+                    <input type="text" id="category" name="category" class="form-control" th:field="*{category.name}">
+                </div>
+                <div class="mb-3">
+                    <label for="date" class="form-label">Date:</label>
+                    <input type="date" id="date" name="date" class="form-control" th:field="*{date}">
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
 </body>
+<script th:src="@{/webjars/bootstrap/5.3.1/js/bootstrap.bundle.min.js}" defer></script>
+<script th:src="@{/webjars/htmx.org/1.9.4/dist/htmx.min.js}" defer></script>
+<script th:src="@{/webjars/jquery/3.5.0/jquery.min.js}"></script>
 </html>
