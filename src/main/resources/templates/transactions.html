@@ -10,42 +10,55 @@
     <script th:src="@{/webjars/htmx.org/1.9.4/dist/htmx.min.js}" defer></script>
 </head>
 <body>
-<tr th:each="transaction: ${transactions}">
-    <td th:text="${transaction.id}"/>
-    <td th:text="${transaction.type}"/>
-    <td th:text="${transaction.amount}"/>
-    <td th:text="${transaction.category.getName()}"/>
-    <a th:href="@{/deleteTransaction(id=${transaction.id})}" class="btn btn-danger">Delete</a>
-    <br/>
-</tr>
-<label for="type">Add new transaction:</label>
-<a th:href="@{/addTransaction}" class="btn btn-danger"></a>
-<div>
-
-</div>
-
-<form method="post" th:action="@{/}">
-    <div style="margin-bottom: 10px;">
+<main class="my-5">
+    <div class="container">
+        <h1 class="mb-4">Transactions</h1>
+        <label>Reset transactions:</label>
+        <a hx-post="/reset" hx-target=".transactions-list" class="btn btn-primary">Reset</a>
+        <br/>
+        <div th:fragment="transactions-list" class="transactions-list">
+            <div class="transaction" th:each="transaction: ${transactions}">
+                <span th:text="${transaction.id}"/>
+                <span th:text="${transaction.type}"/>
+                <span th:text="${transaction.amount}"/>
+                <span th:text="${transaction.category.name}"/>
+                <span th:text="${transaction.date}"/>
+                <a
+                        th:href="@{/showUpdateForm/{id}(id=${transaction.id})}"
+                        class="btn btn-warning"
+                >
+                    Edit
+                </a>
+                <a
+                        th:attr="hx-delete=@{/{id}(id=${transaction.id})}"
+                        hx-swap="outerHTML"
+                        hx-target="closest .transaction"
+                        class="btn btn-danger"
+                        hx-confirm="Are you sure you want to delete transaction?"
+                >
+                    Delete
+                </a>
+                <br/>
+            </div>
+        </div>
+    </div>
+    <form id="transaction-form"
+          th:fragment="transaction-form"
+          hx-post="/createTransaction"
+          hx-target=".transactions-list"
+          hx-include="*"
+          hx-swap-oob="true">
         <label for="type">Type:</label>
         <input type="text" id="type" name="type">
-    </div>
-
-    <div style="margin-bottom: 10px;">
         <label for="amount">Amount:</label>
-        <input type="text" id="amount" name="amount" required>
-    </div>
-
-    <div style="margin-bottom: 10px;">
+        <input type="number" id="amount" name="amount" required>
         <label for="category">Category:</label>
         <input type="text" id="category" name="category">
-    </div>
-
-    <div style="margin-bottom: 10px;">
         <label for="date">Date:</label>
         <input type="date" id="date" name="date">
-    </div>
+        <button type="submit">Add</button>
+    </form>
 
-    <button type="submit">Add Transaction</button>
-</form>
+</main>
 </body>
 </html>

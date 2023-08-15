@@ -11,15 +11,7 @@ import lombok.Setter;
 public class Category {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @Enumerated
     private CategoryType name;
-
-    @Override
-    public String toString() {
-        return name.name();
-    }
 
 }

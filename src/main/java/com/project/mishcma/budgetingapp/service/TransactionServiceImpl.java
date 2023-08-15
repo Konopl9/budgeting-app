@@ -1,10 +1,14 @@
 package com.project.mishcma.budgetingapp.service;
 
+import com.project.mishcma.budgetingapp.entity.Category;
 import com.project.mishcma.budgetingapp.entity.Transaction;
+import com.project.mishcma.budgetingapp.repository.CategoryRepository;
 import com.project.mishcma.budgetingapp.repository.TransactionRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,9 +16,11 @@ import java.util.Optional;
 public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
+    private final CategoryRepository categoryRepository;
 
-    public TransactionServiceImpl(TransactionRepository transactionRepository) {
+    public TransactionServiceImpl(TransactionRepository transactionRepository, CategoryRepository categoryRepository) {
         this.transactionRepository = transactionRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     @Override
@@ -25,8 +31,11 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public Transaction saveTransaction(Transaction transaction) {
         if (transaction.getDate() == null) {
-            transaction.setDate(LocalDate.now());
+            transaction.setDate(Date.from(Instant.now()));
         }
+
+        Category category = categoryRepository.findById(transaction.getCategory().getName()).orElseThrow(IllegalArgumentException::new);
+        transaction.setCategory(category);
         return transactionRepository.save(transaction);
     }
 

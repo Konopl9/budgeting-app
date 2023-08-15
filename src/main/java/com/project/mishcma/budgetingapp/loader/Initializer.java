@@ -1,35 +1,39 @@
 package com.project.mishcma.budgetingapp.loader;
 
 import com.project.mishcma.budgetingapp.entity.Category;
-import com.project.mishcma.budgetingapp.repository.CategoryRepository;
 import com.project.mishcma.budgetingapp.entity.CategoryType;
 import com.project.mishcma.budgetingapp.entity.Transaction;
-import com.project.mishcma.budgetingapp.repository.TransactionRepository;
 import com.project.mishcma.budgetingapp.entity.TransactionType;
+import com.project.mishcma.budgetingapp.event.TransactionResetEvent;
+import com.project.mishcma.budgetingapp.repository.CategoryRepository;
+import com.project.mishcma.budgetingapp.repository.TransactionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 
 @Component
-public class DataLoader implements CommandLineRunner {
+public class Initializer {
 
-    Logger logger = LoggerFactory.getLogger(DataLoader.class);
+    Logger logger = LoggerFactory.getLogger(Initializer.class);
 
     private final CategoryRepository categoryRepository;
     private final TransactionRepository transactionRepository;
 
-    public DataLoader(CategoryRepository categoryRepository, TransactionRepository transactionRepository) {
+    public Initializer(CategoryRepository categoryRepository, TransactionRepository transactionRepository) {
         this.categoryRepository = categoryRepository;
         this.transactionRepository = transactionRepository;
     }
 
-    @Override
-    public void run(String... args) throws Exception {
+    @EventListener({ApplicationReadyEvent.class, TransactionResetEvent.class})
+    public void reset() {
         logger.info("Pre-populated data:");
         logger.info("Number of transactions: " + transactionRepository.findAll().size());
         logger.info("Number of categories: " + categoryRepository.findAll().size());
@@ -43,16 +47,18 @@ public class DataLoader implements CommandLineRunner {
             }
         }
 
-        Optional<Category> categoryTest = categoryRepository.findById(1L);
+        Category categoryTest = categoryRepository.findAll().get(0);
 
         // Check if transactions are already populated in the database
-        if (transactionRepository.count() == 0) {
+        if (transactionRepository.count() != 5) {
+            transactionRepository.deleteAll();
             // Create and save 5 transactions
             for (int i = 1; i <= 5; i++) {
                 Transaction transaction = new Transaction();
                 transaction.setAmount(100.0 * i); // Assuming the amount is 100 * i for simplicity
                 transaction.setType(TransactionType.INCOME); // Assuming all transactions are of type INCOME for simplicity
-                transaction.setCategory(categoryTest.get());
+                transaction.setCategory(categoryTest);
+                transaction.setDate(Date.from(Instant.now()));
                 transactionRepository.save(transaction);
             }
         }
