@@ -4,11 +4,13 @@ package com.project.mishcma.budgetingapp.controller;
 import com.project.mishcma.budgetingapp.entity.Transaction;
 import com.project.mishcma.budgetingapp.event.TransactionResetEvent;
 import com.project.mishcma.budgetingapp.service.TransactionService;
+import io.github.wimdeblauwe.hsbt.mvc.HtmxResponse;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class TransactionController {
@@ -27,18 +29,21 @@ public class TransactionController {
         return "transactions";
     }
 
-    @PostMapping(value = "/createTransaction")
-    public String createTransaction(@ModelAttribute Transaction transaction, Model model) {
-        transactionService.saveTransaction(transaction);
-        model.addAttribute("transactions", transactionService.getTransactions());
-        return "transactions :: transactions-list";
+    @GetMapping(value = "/showUpdateForm/{id}")
+    public ModelAndView showUpdateForm(@PathVariable Long id) {
+        ModelAndView mav = new ModelAndView("update-transaction");
+        Transaction transaction = transactionService.findTransactionById(id);
+        mav.addObject("transaction", transaction);
+        return mav;
     }
 
-    @GetMapping(value = "/showUpdateForm/{id}")
-    public String showUpdateForm(@PathVariable Long id, Model model) {
-        Transaction selectedTransaction = transactionService.findTransactionById(id);
-        model.addAttribute("transaction", selectedTransaction);
-        return "update-transaction";
+    @PostMapping(value = "/createTransaction")
+    public HtmxResponse createTransaction(@ModelAttribute Transaction transaction, Model model) {
+        transactionService.saveTransaction(transaction);
+        model.addAttribute("transactions", transactionService.getTransactions());
+        return new HtmxResponse()
+                .addTemplate("transactions :: transactions-list")
+                .addTemplate("transactions :: transaction-form");
     }
 
     @PostMapping("/reset")
@@ -48,10 +53,10 @@ public class TransactionController {
         return "transactions :: transactions-list";
     }
 
-    @PostMapping(value = "/updateTransaction/{id}")
-    public String updateTransaction(@PathVariable Long id, Transaction transaction, Model model) {
+    @PostMapping( "/updateTransaction")
+    public String updateTransaction(Transaction transaction) {
         transactionService.saveTransaction(transaction);
-        return "redirect:/showAllTransactions";
+        return "redirect:/showAll";
     }
 
     @ResponseBody

@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Entity
 @Table
@@ -27,6 +29,7 @@ public class Transaction {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    private LocalDate date;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date date;
 
 }

@@ -13,8 +13,10 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 
 @Component
@@ -56,6 +58,7 @@ public class Initializer {
                 transaction.setAmount(100.0 * i); // Assuming the amount is 100 * i for simplicity
                 transaction.setType(TransactionType.INCOME); // Assuming all transactions are of type INCOME for simplicity
                 transaction.setCategory(categoryTest);
+                transaction.setDate(Date.from(Instant.now()));
                 transactionRepository.save(transaction);
             }
         }

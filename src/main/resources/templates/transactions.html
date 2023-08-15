@@ -16,21 +16,20 @@
         <label>Reset transactions:</label>
         <a hx-post="/reset" hx-target=".transactions-list" class="btn btn-primary">Reset</a>
         <br/>
-        <label>Add new transaction:</label>
-        <a th:href="@{/addTransaction}" class="btn btn-primary">Add</a>
-        <br/>
         <div th:fragment="transactions-list" class="transactions-list">
             <div class="transaction" th:each="transaction: ${transactions}">
                 <span th:text="${transaction.id}"/>
                 <span th:text="${transaction.type}"/>
                 <span th:text="${transaction.amount}"/>
-                <span th:text="${transaction.category.getName()}"/>
-                <button
+                <span th:text="${transaction.category.name}"/>
+                <span th:text="${transaction.date}"/>
+                <a
+                        th:href="@{/showUpdateForm/{id}(id=${transaction.id})}"
                         class="btn btn-warning"
                 >
                     Edit
-                </button>
-                <button
+                </a>
+                <a
                         th:attr="hx-delete=@{/{id}(id=${transaction.id})}"
                         hx-swap="outerHTML"
                         hx-target="closest .transaction"
@@ -38,12 +37,17 @@
                         hx-confirm="Are you sure you want to delete transaction?"
                 >
                     Delete
-                </button>
+                </a>
                 <br/>
             </div>
         </div>
     </div>
-    <form hx-post="/createTransaction" hx-target=".transactions-list" hx-include="#transaction">
+    <form id="transaction-form"
+          th:fragment="transaction-form"
+          hx-post="/createTransaction"
+          hx-target=".transactions-list"
+          hx-include="*"
+          hx-swap-oob="true">
         <label for="type">Type:</label>
         <input type="text" id="type" name="type">
         <label for="amount">Amount:</label>
