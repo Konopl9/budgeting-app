@@ -43,7 +43,7 @@ public class TransactionController {
         model.addAttribute("transactions", transactionService.getTransactions());
         return new HtmxResponse()
                 .addTemplate("transactions :: transactions-list")
-                .addTemplate("transactions :: transaction-form");
+                .addTrigger("clear-form");
     }
 
     @PostMapping("/reset")
