@@ -10,11 +10,12 @@
     </div>
     <div class="row mt-3">
         <div class="col">
-            <a hx-post="/reset" hx-target=".transactions-list" class="btn btn-primary">Reset Transactions</a>
+            <a hx-post="/reset" hx-target="#transactions-list" class="btn btn-primary" hx-swap="outerHTML">Reset
+                Transactions</a>
         </div>
     </div>
     <div class="row mt-3">
-        <table class="table table-bordered transactions-list" th:fragment="transactions-list">
+        <table class="table table-bordered">
             <thead>
             <tr>
                 <th>ID</th>
@@ -25,7 +26,7 @@
                 <th>Actions</th>
             </tr>
             </thead>
-            <tbody>
+            <tbody th:fragment="transactions-list" id="transactions-list">
             <tr th:each="transaction: ${transactions}">
                 <td><span th:text="${transaction.id}"></span></td>
                 <td><span th:text="${transaction.type}"></span></td>
@@ -40,25 +41,39 @@
                 </td>
             </tr>
             </tbody>
-            <tfoot>
-            <tr th:fragment="transaction-form">
-                <form id="transaction-form"
-                      hx-post="/createTransaction"
-                      hx-target=".transactions-list"
-                      hx-include="*"
-                      hx-swap-oob="true">
+            <tfoot hx-swap-oob="true">
+            <form id="transaction-form"
+                  th:fragment="transaction-form"
+                  hx-post="/createTransaction"
+                  hx-target="#transactions-list"
+                  hx-swap="outerHTML">
+                <tr>
                     <td>#</td>
                     <td><input type="text" id="type" name="type" class="form-control"></td>
                     <td><input type="number" id="amount" name="amount" required class="form-control"></td>
                     <td><input type="text" id="category" name="category" class="form-control"></td>
                     <td><input type="date" id="date" name="date" class="form-control"></td>
-                    <td><button type="submit" class="btn btn-primary">Add</button></td>
-                </form>
-            </tr>
+                    <td>
+                        <button type="submit" class="btn btn-primary">Add</button>
+                    </td>
+                </tr>
+            </form>
             </tfoot>
         </table>
     </div>
 </main>
 </body>
 <footer th:replace="~{fragmment/footer-fragment :: footer}"></footer>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Add an event listener for the custom event 'clear-form'
+        document.addEventListener('clear-form', function (event) {
+            // Clear the form fields
+            document.getElementById('type').value = '';
+            document.getElementById('amount').value = '';
+            document.getElementById('category').value = '';
+            document.getElementById('date').value = '';
+        });
+    });
+</script>
 </html>
