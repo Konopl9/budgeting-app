@@ -84,6 +84,13 @@
             <version>3.5.0</version>
         </dependency>
         <!--Bootstrap-->
+        <!--AWS-->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>1.12.549</version>
+        </dependency>
+        <!--AWS-->
     </dependencies>
     <build>
         <plugins>
