@@ -15,51 +15,69 @@
         </div>
     </div>
     <div class="row mt-3">
-        <table class="table table-bordered">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Type</th>
-                <th>Amount</th>
-                <th>Category</th>
-                <th>Date</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody th:fragment="transactions-list" id="transactions-list">
-            <tr th:each="transaction: ${transactions}">
-                <td><span th:text="${transaction.id}"></span></td>
-                <td><span th:text="${transaction.type}"></span></td>
-                <td><span th:text="${transaction.amount}"></span></td>
-                <td><span th:text="${transaction.category.name}"></span></td>
-                <td><span th:text="${#dates.format(transaction.date, 'yyyy-MM-dd')}"></span></td>
-                <td>
-                    <a th:href="@{/showUpdateForm/{id}(id=${transaction.id})}" class="btn btn-warning">Edit</a>
-                    <a th:attr="hx-delete=@{/{id}(id=${transaction.id})}" hx-swap="outerHTML"
-                       hx-target="closest tr" class="btn btn-danger"
-                       hx-confirm="Are you sure you want to delete this transaction?">Delete</a>
-                </td>
-            </tr>
-            </tbody>
-            <tfoot hx-swap-oob="true">
-            <form id="transaction-form"
-                  th:fragment="transaction-form"
-                  hx-post="/createTransaction"
-                  hx-target="#transactions-list"
-                  hx-swap="outerHTML">
+        <div class="col">
+            <table class="table table-bordered">
+                <thead class="thead-dark">
                 <tr>
-                    <td>#</td>
-                    <td><input type="text" id="type" name="type" class="form-control"></td>
-                    <td><input type="number" id="amount" name="amount" required class="form-control"></td>
-                    <td><input type="text" id="category" name="category" class="form-control"></td>
-                    <td><input type="date" id="date" name="date" class="form-control"></td>
+                    <th>ID</th>
+                    <th>Ticker</th>
+                    <th style="width: 120px;">Type</th> <!-- Adjusted width for the Type column -->
+                    <th>Date</th>
+                    <th>Shares</th>
+                    <th>Price</th>
+                    <th>Total amount</th>
+                    <th style="width: 80px;">Commission</th> <!-- Adjusted width for the Commission column -->
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody th:fragment="transactions-list" id="transactions-list">
+                <tr th:each="transaction: ${transactions}">
+                    <td><span th:text="${transaction.id}"></span></td>
+                    <td><span th:text="${transaction.ticker}"></span></td>
+                    <td><span th:text="${transaction.type}"></span></td>
+                    <td><span th:text="${#dates.format(transaction.date, 'yyyy-MM-dd')}"></span></td>
+                    <td><span th:text="${transaction.quantity}"></span></td>
+                    <td><span th:text="${transaction.price}"></span></td>
+                    <td><span th:text="${transaction.totalAmount}"></span></td>
+                    <td><span th:text="${transaction.commission}"></span></td>
                     <td>
-                        <button type="submit" class="btn btn-primary">Add</button>
+                        <div class="btn-group">
+                            <a th:href="@{/showUpdateForm/{id}(id=${transaction.id})}" class="btn btn-warning btn-sm">Edit</a>
+                            <a th:attr="hx-delete=@{/{id}(id=${transaction.id})}" hx-swap="outerHTML"
+                               hx-target="closest tr" class="btn btn-danger btn-sm"
+                               hx-confirm="Are you sure you want to delete this transaction?">Delete</a>
+                        </div>
                     </td>
                 </tr>
-            </form>
-            </tfoot>
-        </table>
+                </tbody>
+                <tfoot hx-swap-oob="true">
+                <form id="transaction-form"
+                      th:fragment="transaction-form"
+                      hx-post="/createTransaction"
+                      hx-target="#transactions-list"
+                      hx-swap="outerHTML">
+                    <tr>
+                        <td>#</td>
+                        <td><input type="text" id="ticker" name="ticker" class="form-control"></td>
+                        <td>
+                            <select id="type" name="type" class="form-control">
+                                <option value="BUY" selected>BUY</option>
+                                <option value="SELL">SELL</option>
+                            </select>
+                        </td>
+                        <td><input type="date" id="date" name="date" class="form-control"></td>
+                        <td><input type="number" step="0.01" id="quantity" name="quantity" required class="form-control"></td>
+                        <td><input type="number" step="0.01" id="price" name="price" required class="form-control"></td>
+                        <td>#</td>
+                        <td><input type="number" step="0.01" id="commission" name="commission" required class="form-control"></td>
+                        <td>
+                            <button type="submit" class="btn btn-primary btn-sm">Add</button>
+                        </td>
+                    </tr>
+                </form>
+                </tfoot>
+            </table>
+        </div>
     </div>
 </main>
 </body>
@@ -69,10 +87,11 @@
         // Add an event listener for the custom event 'clear-form'
         document.addEventListener('clear-form', function (event) {
             // Clear the form fields
-            document.getElementById('type').value = '';
-            document.getElementById('amount').value = '';
-            document.getElementById('category').value = '';
+            document.getElementById('ticker').value = '';
             document.getElementById('date').value = '';
+            document.getElementById('quantity').value = '';
+            document.getElementById('price').value = '';
+            document.getElementById('commission').value = '';
         });
     });
 </script>
