@@ -6,7 +6,6 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -20,16 +19,22 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Double amount;
+    private String ticker;
 
     @Enumerated(EnumType.STRING)
     private TransactionType type;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
-
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date date;
+
+    private Double quantity;
+
+    private Double price;
+
+    private Double totalAmount;
+
+    private Double commission;
+
+
 
 }
