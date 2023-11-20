@@ -4,6 +4,7 @@ import com.project.mishcma.budgetingapp.entity.Transaction;
 import com.project.mishcma.budgetingapp.entity.TransactionType;
 import com.project.mishcma.budgetingapp.event.TransactionResetEvent;
 import com.project.mishcma.budgetingapp.repository.TransactionRepository;
+import com.project.mishcma.budgetingapp.service.FileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -21,8 +22,11 @@ public class Initializer {
     Logger logger = LoggerFactory.getLogger(Initializer.class);
     private final TransactionRepository transactionRepository;
 
-    public Initializer(TransactionRepository transactionRepository) {
+    private final FileService fileService;
+
+    public Initializer(TransactionRepository transactionRepository, FileService fileService) {
         this.transactionRepository = transactionRepository;
+        this.fileService = fileService;
     }
 
     @EventListener({ApplicationReadyEvent.class, TransactionResetEvent.class})
@@ -52,6 +56,12 @@ public class Initializer {
         logger.info("Data from Transaction table:");
         for (Transaction transaction : allTransactions) {
             logger.info(transaction.toString());
+        }
+
+        // Print all data from S3
+        logger.info("S3 Files before upload");
+        for (String fileName : fileService.getFileNames()) {
+            logger.info("File name: " + fileName);
         }
     }
 }
