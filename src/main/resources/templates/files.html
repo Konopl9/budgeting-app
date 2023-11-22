@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head th:replace="~{fragmment/head-fragment :: html_head(title='Files')}">
-    <!-- Include Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
 <nav th:replace="~{fragmment/nav-bar-fragment :: nav_bar}"></nav>
@@ -25,6 +23,8 @@
                 <tr th:each="fileName: ${fileNames}">
                     <td><span th:text="${fileName}"></span></td>
                     <td>
+                        <a class="btn btn-primary"
+                           th:attr="hx-post=@{/files/{fileName}(fileName=${fileName})}" hx-swap="none">Process</a>
                         <a class="btn btn-danger"
                            th:attr="hx-delete=@{/files/{fileName}(fileName=${fileName})}"
                            hx-swap="outerHTML"

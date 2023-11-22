@@ -86,6 +86,13 @@
             <version>1.12.549</version>
         </dependency>
         <!--AWS-->
+        <!--PARSE-->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.8</version>
+        </dependency>
+        <!--AWS-->
     </dependencies>
     <build>
         <plugins>
