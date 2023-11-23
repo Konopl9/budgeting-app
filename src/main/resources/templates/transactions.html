@@ -81,5 +81,18 @@
     </div>
 </main>
 </body>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Add an event listener for the custom event 'clear-form'
+        document.addEventListener('clear-form', function (event) {
+            // Clear the form fields
+            document.getElementById('ticker').value = '';
+            document.getElementById('date').value = '';
+            document.getElementById('quantity').value = '';
+            document.getElementById('price').value = '';
+            document.getElementById('commission').value = '';
+        });
+    });
+</script>
 <footer th:replace="~{fragmment/footer-fragment :: footer}"></footer>
 </html>

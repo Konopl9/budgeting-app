@@ -21,7 +21,7 @@ public class FileServiceImpl implements FileService {
     private final AmazonS3 s3Client;
     private final TransactionService transactionService;
 
-    public FileServiceImpl(AmazonS3 s3Client, TransactionService transactionService, CSVHelper csvHelper) {
+    public FileServiceImpl(AmazonS3 s3Client, TransactionService transactionService) {
         this.s3Client = s3Client;
         this.transactionService = transactionService;
     }
@@ -65,6 +65,9 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public String uploadFile(MultipartFile multipartFile) {
+        if (!CSVHelper.hasCSVFormat(multipartFile)) {
+            throw new UnsupportedOperationException("Exception! Please upload file of type .csv ");
+        }
         File file = convertMultiPartToFile(multipartFile);
         PutObjectRequest request = new PutObjectRequest(BUCKET_NAME, file.getName(), file);
         PutObjectResult result = s3Client.putObject(request);

@@ -2,7 +2,6 @@ package com.project.mishcma.budgetingapp.controller;
 
 
 import com.project.mishcma.budgetingapp.service.FileService;
-import io.github.wimdeblauwe.hsbt.mvc.HxTrigger;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,17 +27,20 @@ public class FilesController {
 
     @PostMapping
     public String uploadFile(@RequestParam("file") MultipartFile file, Model model) {
-        String info = fileService.uploadFile(file);
+        fileService.uploadFile(file);
         model.addAttribute("fileNames", fileService.getFileNames());
         return "files";
     }
 
     @PostMapping(value = "/{fileName}")
-    public ModelAndView processFile(@PathVariable String fileName) {
-        ModelAndView mav = new ModelAndView("transactions");
+    public String processFile(@PathVariable String fileName, Model model) {
         Integer addedRows = fileService.processCsvFile(fileName);
-        mav.addObject("transactions_added", addedRows);
-        return mav;
+        if (addedRows <= 0) {
+            model.addAttribute("error", "The error occurred.");
+            return "files :: alert-container";
+        }
+        model.addAttribute("success", String.format("Transactions added: %d", addedRows));
+        return "files :: alert-container";
     }
 
     @ResponseBody
@@ -48,4 +50,11 @@ public class FilesController {
         return "";
     }
 
+    @ExceptionHandler(UnsupportedOperationException.class)
+    public ModelAndView handleUnsupportedOperationException(Exception ex) {
+        ModelAndView model = new ModelAndView("files");
+        model.addObject("error", ex);
+        model.addObject("fileNames", fileService.getFileNames());
+        return model;
+    }
 }

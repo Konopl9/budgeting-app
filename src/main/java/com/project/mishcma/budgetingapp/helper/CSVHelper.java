@@ -24,7 +24,6 @@ public class CSVHelper {
     static String[] HEADERs = {"Symbol", "Action", "Date", "Quantity", "Price", "Commission"};
 
     public static boolean hasCSVFormat(MultipartFile file) {
-
         return TYPE.equals(file.getContentType());
     }
 
