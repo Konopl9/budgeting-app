@@ -15,6 +15,18 @@ import java.util.Date;
 @ToString
 public class Transaction {
 
+    public Transaction() {}
+
+    public Transaction(String ticker, TransactionType type, Date date, Double quantity, Double price, Double commission) {
+        this.ticker = ticker;
+        this.type = type;
+        this.date = date;
+        this.quantity = quantity;
+        this.price = price;
+        this.commission = commission;
+        this.totalAmount = quantity * price - commission;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

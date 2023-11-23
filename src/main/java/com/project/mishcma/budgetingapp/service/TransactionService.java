@@ -10,6 +10,8 @@ public interface TransactionService {
 
     Transaction saveTransaction(Transaction transaction);
 
+    int saveTransactions(List<Transaction> transactions);
+
     Transaction findTransactionById(Long id);
 
     void deleteTransaction(Long id);

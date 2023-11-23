@@ -1,12 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head th:replace="~{fragmment/head-fragment :: html_head(title='Files')}">
-    <!-- Include Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
 <nav th:replace="~{fragmment/nav-bar-fragment :: nav_bar}"></nav>
 <main class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div id="alert-container" th:fragment="alert-container">
+                <div class="alert alert-success alert-dismissible" role="alert" th:if="${success}">
+                    <span th:text="${success}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <div class="alert alert-danger alert-dismissible" role="alert" th:if="${error}">
+                    <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-12">
             <h1 class="mb-4">Files</h1>
@@ -25,6 +37,12 @@
                 <tr th:each="fileName: ${fileNames}">
                     <td><span th:text="${fileName}"></span></td>
                     <td>
+                        <a class="btn btn-primary"
+                           th:attr="hx-post=@{/files/{fileName}(fileName=${fileName})}"
+                           hx-target="#alert-container"
+                           hx-swap="innerHTML"
+                           hx-confirm="Are you sure you want to import transaction from the file to your portfolio?"
+                        >Process</a>
                         <a class="btn btn-danger"
                            th:attr="hx-delete=@{/files/{fileName}(fileName=${fileName})}"
                            hx-swap="outerHTML"
@@ -40,7 +58,7 @@
           hx-swap="outerHTML">
         <div class="mb-3">
             <label for="fileInput" class="form-label">Upload New File</label>
-            <input type="file" class="form-control" id="fileInput" name="file" accept=".xlsx, .xls, .csv">
+            <input type="file" class="form-control" id="fileInput" name="file" accept=".csv">
         </div>
         <button type="submit" class="btn btn-primary">Upload</button>
     </form>

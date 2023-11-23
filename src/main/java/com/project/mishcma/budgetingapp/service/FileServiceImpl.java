@@ -2,6 +2,8 @@ package com.project.mishcma.budgetingapp.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
+import com.project.mishcma.budgetingapp.entity.Transaction;
+import com.project.mishcma.budgetingapp.helper.CSVHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,9 +19,11 @@ public class FileServiceImpl implements FileService {
 
     private static final String BUCKET_NAME = "budgeting-app-storage";
     private final AmazonS3 s3Client;
+    private final TransactionService transactionService;
 
-    public FileServiceImpl(AmazonS3 s3Client) {
+    public FileServiceImpl(AmazonS3 s3Client, TransactionService transactionService) {
         this.s3Client = s3Client;
+        this.transactionService = transactionService;
     }
 
     @Override
@@ -41,6 +45,19 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    public S3Object getFileByName(String name) {
+        GetObjectRequest getObjectRequest = new GetObjectRequest(BUCKET_NAME, name);
+        return s3Client.getObject(getObjectRequest);
+    }
+
+    @Override
+    public Integer processCsvFile(String name) {
+        S3Object file = getFileByName(name);
+        List<Transaction> transactionsToAdd = CSVHelper.csvToTransactions(file.getObjectContent().getDelegateStream());
+        return transactionService.saveTransactions(transactionsToAdd);
+    }
+
+    @Override
     public void deleteFile(String key) {
         DeleteObjectRequest request = new DeleteObjectRequest(BUCKET_NAME, key);
         s3Client.deleteObject(request);
@@ -48,6 +65,9 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public String uploadFile(MultipartFile multipartFile) {
+        if (!CSVHelper.hasCSVFormat(multipartFile)) {
+            throw new UnsupportedOperationException("Exception! Please upload file of type .csv ");
+        }
         File file = convertMultiPartToFile(multipartFile);
         PutObjectRequest request = new PutObjectRequest(BUCKET_NAME, file.getName(), file);
         PutObjectResult result = s3Client.putObject(request);
@@ -63,6 +83,5 @@ public class FileServiceImpl implements FileService {
         }
         return convertedFile;
     }
-
 
 }

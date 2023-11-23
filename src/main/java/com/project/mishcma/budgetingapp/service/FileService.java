@@ -1,6 +1,7 @@
 package com.project.mishcma.budgetingapp.service;
 
 
+import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,4 +16,8 @@ public interface FileService {
     void deleteFile(String key);
 
     String uploadFile(MultipartFile file);
+
+    S3Object getFileByName(String name);
+
+    Integer processCsvFile(String name);
 }

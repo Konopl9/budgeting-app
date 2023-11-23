@@ -33,6 +33,11 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    public int saveTransactions(List<Transaction> transactions) {
+        return transactionRepository.saveAll(transactions).size();
+    }
+
+    @Override
     public Transaction findTransactionById(Long id) {
         return unWrapTransaction(transactionRepository.findById(id));
     }
