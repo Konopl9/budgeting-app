@@ -2,6 +2,7 @@ package com.project.mishcma.budgetingapp.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
@@ -9,12 +10,14 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class Position {
 
     @Id
     private String symbol;
 
     private Integer quantity;
+
     private Double averagePrice;
 
     @ManyToOne

@@ -2,8 +2,8 @@ package com.project.mishcma.budgetingapp.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
@@ -11,9 +11,8 @@ import java.util.Date;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class Transaction {
-
-    public Transaction() {}
 
     public Transaction(String ticker, TransactionType type, Date date, Double quantity, Double price, Double commission) {
         this.ticker = ticker;
