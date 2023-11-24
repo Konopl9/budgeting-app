@@ -9,10 +9,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
 
 @Entity
-@Table
 @Getter
 @Setter
-@ToString
 public class Transaction {
 
     public Transaction() {}
@@ -47,6 +45,20 @@ public class Transaction {
 
     private Double commission;
 
+    @ManyToOne
+    @JoinColumn(name = "position_id", nullable = false)
+    private Position position;
 
-
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "ticker='" + ticker + '\'' +
+                ", type=" + type +
+                ", date=" + date +
+                ", quantity=" + quantity +
+                ", price=" + price +
+                ", totalAmount=" + totalAmount +
+                ", commission=" + commission +
+                '}';
+    }
 }
