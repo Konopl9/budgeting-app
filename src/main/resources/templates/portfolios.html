@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="~{fragmment/head-fragment :: html_head(title='Portfolios')}">
+</head>
+<body>
+<nav th:replace="~{fragmment/nav-bar-fragment :: nav_bar}"></nav>
+<main>
+    <tr th:each="name: ${portfolioNames}">
+        <td>
+            <span th:text="${name}"></span>
+        </td>
+    </tr>
+</main>
+</body>
+<footer th:replace="~{fragmment/footer-fragment :: footer}"></footer>
+</html>

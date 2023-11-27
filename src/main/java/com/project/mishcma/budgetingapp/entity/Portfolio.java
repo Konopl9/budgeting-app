@@ -24,4 +24,11 @@ public class Portfolio {
     @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transaction> transactions;
 
+    @Transient
+    private List<Position> positions;
+
+    public Portfolio(String name, Double cashBalance) {
+        this.name = name;
+        this.cashBalance = cashBalance;
+    }
 }
