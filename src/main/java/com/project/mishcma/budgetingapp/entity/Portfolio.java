@@ -1,10 +1,7 @@
 package com.project.mishcma.budgetingapp.entity;
 
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,12 +19,9 @@ public class Portfolio {
 
     private Double cashBalance;
 
-    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL)
-    private List<Position> positions;
-
     private Double costOfInvestments;
 
-
-
+    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Transaction> transactions;
 
 }

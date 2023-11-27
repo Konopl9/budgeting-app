@@ -1,30 +1,29 @@
 package com.project.mishcma.budgetingapp.entity;
 
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
 
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 public class Position {
 
-    @Id
-    private String symbol;
+    private String ticker;
 
-    private Integer quantity;
+    private Double quantity;
 
     private Double averagePrice;
 
-    @ManyToOne
-    @JoinColumn(name = "portfolio_name", nullable = false)
     private Portfolio portfolio;
 
-    @OneToMany(mappedBy = "position", cascade = CascadeType.ALL)
     private List<Transaction> transactions;
 
+    public Position(String ticker, Double quantity, Double averagePrice) {
+        this.ticker = ticker;
+        this.quantity = quantity;
+        this.averagePrice = averagePrice;
+    }
 }

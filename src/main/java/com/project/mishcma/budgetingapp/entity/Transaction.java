@@ -45,8 +45,8 @@ public class Transaction {
     private Double commission;
 
     @ManyToOne
-    @JoinColumn(name = "position_id", nullable = false)
-    private Position position;
+    @JoinColumn(name = "portfolio_name")
+    private Portfolio portfolio;
 
     @Override
     public String toString() {
