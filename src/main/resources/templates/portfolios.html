@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="~{fragmment/head-fragment :: html_head(title='Portfolios')}">
+</head>
+<body>
+<nav th:replace="~{fragmment/nav-bar-fragment :: nav_bar}"></nav>
+<div class="container">
+    <div class="row m-3">
+        <div class="column">
+            <p class="h1">Select the portfolio</p>
+            <select class="form-select form-select-sm" aria-label=".form-select-sm example">
+                <option th:each="name : ${portfolioNames}" th:value="${name}" th:text="${name}"></option>
+            </select>
+        </div>
+    </div>
+    <hr class="hr" />
+    <div class="row m-3">
+        <div class="column">
+            <h1>Positions</h1>
+        </div>
+    </div>
+    <div class="row m-3">
+        <div class="col">
+            <table class="table table-bordered">
+                <thead class="thead-dark">
+                <tr>
+                    <th>Ticker</th>
+                    <th>Current Price</th>
+                    <th>Quantity</th>
+                    <th>Average Price</th>
+                    <th>Price Payed</th>
+                    <th>% of Portfolio</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="position: ${positions}">
+                    <td><span th:text="${position.ticker}"></span></td>
+                    <td><span>##.##</span></td>
+                    <td><span th:text="${#numbers.formatDecimal(position.quantity, 0, 2)}"></span></td>
+                    <td><span th:text="${#numbers.formatDecimal(position.averagePrice, 0, 2)}"></span></td>
+                    <td><span>##.##</span></td>
+                    <td><span>##.##</span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+<footer th:replace="~{fragmment/footer-fragment :: footer}"></footer>
+</html>

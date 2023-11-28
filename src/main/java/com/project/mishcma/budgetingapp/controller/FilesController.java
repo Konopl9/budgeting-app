@@ -34,7 +34,7 @@ public class FilesController {
 
     @PostMapping(value = "/{fileName}")
     public String processFile(@PathVariable String fileName, Model model) {
-        Integer addedRows = fileService.processCsvFile(fileName);
+        Integer addedRows = fileService.processCsvFile(fileName, "My Portfolio");
         if (addedRows <= 0) {
             model.addAttribute("error", "The error occurred.");
             return "files :: alert-container";

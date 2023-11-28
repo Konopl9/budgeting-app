@@ -2,6 +2,7 @@ package com.project.mishcma.budgetingapp.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
+import com.project.mishcma.budgetingapp.entity.Portfolio;
 import com.project.mishcma.budgetingapp.entity.Transaction;
 import com.project.mishcma.budgetingapp.helper.CSVHelper;
 import org.springframework.stereotype.Service;
@@ -21,9 +22,12 @@ public class FileServiceImpl implements FileService {
     private final AmazonS3 s3Client;
     private final TransactionService transactionService;
 
-    public FileServiceImpl(AmazonS3 s3Client, TransactionService transactionService) {
+    private final PortfolioService portfolioService;
+
+    public FileServiceImpl(AmazonS3 s3Client, TransactionService transactionService, PortfolioService portfolioService) {
         this.s3Client = s3Client;
         this.transactionService = transactionService;
+        this.portfolioService = portfolioService;
     }
 
     @Override
@@ -51,9 +55,11 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public Integer processCsvFile(String name) {
-        S3Object file = getFileByName(name);
+    public Integer processCsvFile(String fileName, String portfolioName) {
+        S3Object file = getFileByName(fileName);
         List<Transaction> transactionsToAdd = CSVHelper.csvToTransactions(file.getObjectContent().getDelegateStream());
+        Portfolio portfolio = portfolioService.findPortfolioByName(portfolioName);
+        transactionsToAdd.forEach(transaction -> transaction.setPortfolio(portfolio));
         return transactionService.saveTransactions(transactionsToAdd);
     }
 

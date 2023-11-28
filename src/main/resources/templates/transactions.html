@@ -4,7 +4,6 @@
 <body>
 <nav th:replace="~{fragmment/nav-bar-fragment :: nav_bar}"></nav>
 <main class="container mt-5">
-
     <div class="row">
         <h1>Transactions</h1>
     </div>
@@ -21,12 +20,12 @@
                 <tr>
                     <th>ID</th>
                     <th>Ticker</th>
-                    <th style="width: 120px;">Type</th> <!-- Adjusted width for the Type column -->
+                    <th style="width: 120px;">Type</th>
                     <th>Date</th>
                     <th>Shares</th>
                     <th>Price</th>
                     <th>Total amount</th>
-                    <th style="width: 80px;">Commission</th> <!-- Adjusted width for the Commission column -->
+                    <th style="width: 80px;">Commission</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -59,6 +58,7 @@
                     <tr>
                         <td>#</td>
                         <td><input type="text" id="ticker" name="ticker" class="form-control"></td>
+                        <input type="hidden" name="portfolio" value="My Portfolio">
                         <td>
                             <select id="type" name="type" class="form-control">
                                 <option value="BUY" selected>BUY</option>

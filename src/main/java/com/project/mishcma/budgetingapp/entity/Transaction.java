@@ -2,30 +2,17 @@ package com.project.mishcma.budgetingapp.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
 @Entity
-@Table
 @Getter
 @Setter
-@ToString
+@NoArgsConstructor
 public class Transaction {
-
-    public Transaction() {}
-
-    public Transaction(String ticker, TransactionType type, Date date, Double quantity, Double price, Double commission) {
-        this.ticker = ticker;
-        this.type = type;
-        this.date = date;
-        this.quantity = quantity;
-        this.price = price;
-        this.commission = commission;
-        this.totalAmount = quantity * price - commission;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,6 +34,30 @@ public class Transaction {
 
     private Double commission;
 
+    @ManyToOne
+    @JoinColumn(name = "portfolio_name")
+    private Portfolio portfolio;
 
+    public Transaction(String ticker, TransactionType type, Date date, Double quantity, Double price, Double commission) {
+        this.ticker = ticker;
+        this.type = type;
+        this.date = date;
+        this.quantity = quantity;
+        this.price = price;
+        this.commission = commission;
+        this.totalAmount = quantity * price - commission;
+    }
 
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "ticker='" + ticker + '\'' +
+                ", type=" + type +
+                ", date=" + date +
+                ", quantity=" + quantity +
+                ", price=" + price +
+                ", totalAmount=" + totalAmount +
+                ", commission=" + commission +
+                '}';
+    }
 }
