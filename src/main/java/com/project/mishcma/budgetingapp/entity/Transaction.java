@@ -14,16 +14,6 @@ import java.util.Date;
 @NoArgsConstructor
 public class Transaction {
 
-    public Transaction(String ticker, TransactionType type, Date date, Double quantity, Double price, Double commission) {
-        this.ticker = ticker;
-        this.type = type;
-        this.date = date;
-        this.quantity = quantity;
-        this.price = price;
-        this.commission = commission;
-        this.totalAmount = quantity * price - commission;
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -47,6 +37,16 @@ public class Transaction {
     @ManyToOne
     @JoinColumn(name = "portfolio_name")
     private Portfolio portfolio;
+
+    public Transaction(String ticker, TransactionType type, Date date, Double quantity, Double price, Double commission) {
+        this.ticker = ticker;
+        this.type = type;
+        this.date = date;
+        this.quantity = quantity;
+        this.price = price;
+        this.commission = commission;
+        this.totalAmount = quantity * price - commission;
+    }
 
     @Override
     public String toString() {

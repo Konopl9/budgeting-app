@@ -19,5 +19,5 @@ public interface FileService {
 
     S3Object getFileByName(String name);
 
-    Integer processCsvFile(String name);
+    Integer processCsvFile(String name, String portfolioName);
 }

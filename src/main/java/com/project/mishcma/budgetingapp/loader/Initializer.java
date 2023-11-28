@@ -66,6 +66,32 @@ public class Initializer {
                 transaction.setPortfolio(portfolio);
                 transactionRepository.save(transaction);
             }
+
+            for (int i = 1; i <= 5; i++) {
+                Transaction transaction = new Transaction();
+                transaction.setTicker("MSFT");
+                transaction.setType(TransactionType.BUY);
+                transaction.setDate(Date.from(Instant.now()));
+                transaction.setQuantity(2d);
+                transaction.setPrice(1000d);
+                transaction.setTotalAmount(2000d);
+                transaction.setCommission(0.35d);
+                transaction.setPortfolio(portfolio);
+                transactionRepository.save(transaction);
+            }
+
+            for (int i = 1; i <= 5; i++) {
+                Transaction transaction = new Transaction();
+                transaction.setTicker("GOOGL");
+                transaction.setType(TransactionType.BUY);
+                transaction.setDate(Date.from(Instant.now()));
+                transaction.setQuantity(10d);
+                transaction.setPrice(1000d);
+                transaction.setTotalAmount(2000d);
+                transaction.setCommission(0.35d);
+                transaction.setPortfolio(portfolio);
+                transactionRepository.save(transaction);
+            }
         }
 
         // Print all data from the Transaction table

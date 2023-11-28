@@ -21,7 +21,7 @@ public class Portfolio {
 
     private Double costOfInvestments;
 
-    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL)
     private List<Transaction> transactions;
 
     @Transient

@@ -28,12 +28,13 @@ public class PortfolioServiceImpl implements PortfolioService {
 
     @Override
     public Portfolio findPortfolioByName(String name) {
-        Portfolio portfolio = portfolioRepository.findById(name).orElseThrow(EntityNotFoundException::new);
+        return portfolioRepository.findById(name).orElseThrow(EntityNotFoundException::new);
+    }
 
-        List<Position> createdPositions = positionService.createPositionsFromTransactions(portfolio);
-        portfolio.setPositions(createdPositions);
-
-        return portfolio;
+    @Override
+    public List<Position> generatePortfolioPositionsByName(String name) {
+        Portfolio portfolio = findPortfolioByName(name);
+        return positionService.createPositionsFromTransactions(portfolio);
     }
 
     @Override

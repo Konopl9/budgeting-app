@@ -4,7 +4,6 @@
 <body>
 <nav th:replace="~{fragmment/nav-bar-fragment :: nav_bar}"></nav>
 <main class="container mt-5">
-
     <div class="row">
         <h1>Transactions</h1>
     </div>
@@ -59,6 +58,7 @@
                     <tr>
                         <td>#</td>
                         <td><input type="text" id="ticker" name="ticker" class="form-control"></td>
+                        <input type="hidden" name="portfolio" value="My Portfolio">
                         <td>
                             <select id="type" name="type" class="form-control">
                                 <option value="BUY" selected>BUY</option>
