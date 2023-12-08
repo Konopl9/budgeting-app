@@ -2,9 +2,13 @@ package com.project.mishcma.budgetingapp.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
+import com.project.mishcma.budgetingapp.DTO.SymbolDTO;
 import com.project.mishcma.budgetingapp.entity.Portfolio;
 import com.project.mishcma.budgetingapp.entity.Transaction;
+import com.project.mishcma.budgetingapp.exception.StockSymbolNotFoundException;
 import com.project.mishcma.budgetingapp.helper.CSVHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,9 +18,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class FileServiceImpl implements FileService {
+
+    private final Logger logger = LoggerFactory.getLogger(FileServiceImpl.class);
 
     private static final String BUCKET_NAME = "budgeting-app-storage";
     private final AmazonS3 s3Client;
@@ -24,10 +31,13 @@ public class FileServiceImpl implements FileService {
 
     private final PortfolioService portfolioService;
 
-    public FileServiceImpl(AmazonS3 s3Client, TransactionService transactionService, PortfolioService portfolioService) {
+    private final MarketDataService marketDataService;
+
+    public FileServiceImpl(AmazonS3 s3Client, TransactionService transactionService, PortfolioService portfolioService, MarketDataService marketDataService) {
         this.s3Client = s3Client;
         this.transactionService = transactionService;
         this.portfolioService = portfolioService;
+        this.marketDataService = marketDataService;
     }
 
     @Override
@@ -58,6 +68,11 @@ public class FileServiceImpl implements FileService {
     public Integer processCsvFile(String fileName, String portfolioName) {
         S3Object file = getFileByName(fileName);
         List<Transaction> transactionsToAdd = CSVHelper.csvToTransactions(file.getObjectContent().getDelegateStream());
+        try {
+            marketDataService.postStockSymbolsData(transactionsToAdd.stream().map(Transaction::getTicker).toList());
+        } catch (StockSymbolNotFoundException e) {
+            logger.error(e.getMessage());
+        }
         Portfolio portfolio = portfolioService.findPortfolioByName(portfolioName);
         transactionsToAdd.forEach(transaction -> transaction.setPortfolio(portfolio));
         return transactionService.saveTransactions(transactionsToAdd);

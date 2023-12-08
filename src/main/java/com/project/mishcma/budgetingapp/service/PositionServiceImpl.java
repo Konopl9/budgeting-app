@@ -1,9 +1,10 @@
 package com.project.mishcma.budgetingapp.service;
 
-import com.project.mishcma.budgetingapp.entity.Portfolio;
-import com.project.mishcma.budgetingapp.entity.Position;
-import com.project.mishcma.budgetingapp.entity.Transaction;
-import com.project.mishcma.budgetingapp.entity.TransactionType;
+import com.project.mishcma.budgetingapp.DTO.StockDataDTO;
+import com.project.mishcma.budgetingapp.entity.*;
+import com.project.mishcma.budgetingapp.exception.StockDataNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -11,7 +12,15 @@ import java.util.*;
 @Service
 public class PositionServiceImpl implements PositionService {
 
+    private final Logger logger = LoggerFactory.getLogger(PositionServiceImpl.class);
+
+    private final MarketDataService marketDataService;
+
     private static final double ZERO = 0.0;
+
+    public PositionServiceImpl(MarketDataService marketDataService) {
+        this.marketDataService = marketDataService;
+    }
 
     @Override
     public List<Position> createPositionsFromTransactions(Portfolio portfolio) {
@@ -29,13 +38,42 @@ public class PositionServiceImpl implements PositionService {
             tickerSpecificTransactions.add(transaction);
         }
 
-        // Create positions
-        for (Map.Entry<String, List<Transaction>> entry : tickerToTransactionMap.entrySet()) {
-            Position position = getPosition(entry);
-            position.setTransactions(entry.getValue());
-            position.setPortfolio(portfolio);
-            calculatedPositions.add(position);
+        try {
+            // Fetch stock data from the market data service
+            Optional<List<StockDataDTO>> stockDataOptional = marketDataService.postPortfolioData(tickerToTransactionMap.keySet());
+
+            if (stockDataOptional.isPresent()) {
+                List<StockDataDTO> stockData = stockDataOptional.get();
+
+                // Create positions
+                for (Map.Entry<String, List<Transaction>> entry : tickerToTransactionMap.entrySet()) {
+                    String ticker = entry.getKey();
+                    List<Transaction> transactionsForTicker = entry.getValue();
+
+                    // Find the StockDataDTO for the current ticker
+                    Optional<StockDataDTO> stockDataForTicker = stockData.stream()
+                            .filter(stock -> stock.getSymbol().equals(ticker))
+                            .findFirst();
+
+                    if (stockDataForTicker.isPresent()) {
+                        Position position = getPosition(entry);
+                        position.setStockDataDTO(stockDataForTicker.get());
+                        position.setCurrentPositionValue(stockDataForTicker.get().getCurrentPrice() * position.getQuantity());
+                        position.setTransactions(transactionsForTicker);
+                        position.setPortfolio(portfolio);
+                        calculatedPositions.add(position);
+                    } else {
+                        logger.warn("Stock data not available for ticker: " + ticker);
+                    }
+                }
+            } else {
+                // Handle the case where stock data is not available
+                logger.warn("Stock data not available for any tickers");
+            }
+        } catch (StockDataNotFoundException e) {
+            logger.error("Unable to retrieve stock data: " + e.getMessage());
         }
+
 
         return calculatedPositions;
     }

@@ -1,5 +1,6 @@
 package com.project.mishcma.budgetingapp.entity;
 
+import com.project.mishcma.budgetingapp.DTO.StockDataDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,11 +14,17 @@ public class Position {
 
     private String ticker;
 
+    private StockDataDTO stockDataDTO;
+
     private Double quantity;
 
     private Double averagePrice;
 
+    private Double currentPositionValue;
+
     private Portfolio portfolio;
+
+    private Double percentOfPortfolio;
 
     private List<Transaction> transactions;
 

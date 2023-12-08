@@ -1,5 +1,6 @@
 package com.project.mishcma.budgetingapp.controller;
 
+import com.project.mishcma.budgetingapp.entity.Portfolio;
 import com.project.mishcma.budgetingapp.entity.Position;
 import com.project.mishcma.budgetingapp.service.PortfolioService;
 import org.springframework.stereotype.Controller;
@@ -23,15 +24,15 @@ public class PortfolioController {
     @GetMapping
     public String showAllForm(Model model) {
         model.addAttribute("portfolioNames", portfolioService.getPortfoliosNames());
-        List<Position> positions = portfolioService.generatePortfolioPositionsByName("My Portfolio");
-        model.addAttribute("positions", positions);
+        Portfolio portfolio = portfolioService.generatePortfolioPositionsByName("My Portfolio");
+        model.addAttribute("portfolio", portfolio);
         return "portfolios";
     }
 
     @GetMapping(value = "/{name}/positions")
     public String showPortfolioPositions(@PathVariable String name, Model model) {
-        List<Position> positions = portfolioService.generatePortfolioPositionsByName(name);
-        model.addAttribute("positions", positions);
+        Portfolio portfolio = portfolioService.generatePortfolioPositionsByName(name);
+        model.addAttribute("portfolio", portfolio);
         return "portfolios";
     }
 }

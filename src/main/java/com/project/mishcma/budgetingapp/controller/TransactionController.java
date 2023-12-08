@@ -3,6 +3,7 @@ package com.project.mishcma.budgetingapp.controller;
 
 import com.project.mishcma.budgetingapp.entity.Transaction;
 import com.project.mishcma.budgetingapp.event.TransactionResetEvent;
+import com.project.mishcma.budgetingapp.exception.StockSymbolNotFoundException;
 import com.project.mishcma.budgetingapp.service.TransactionService;
 import io.github.wimdeblauwe.hsbt.mvc.HtmxResponse;
 import org.springframework.context.ApplicationEventPublisher;
@@ -37,14 +38,22 @@ public class TransactionController {
         return mav;
     }
 
-    @PostMapping(value = "/createTransaction")
-    public HtmxResponse createTransaction(@ModelAttribute Transaction transaction, Model model) {
-        transactionService.saveTransaction(transaction);
-        model.addAttribute("transactions", transactionService.getTransactions());
-        return new HtmxResponse()
-                .addTemplate("transactions :: transactions-list")
-                .addTrigger("clear-form");
+  @PostMapping(value = "/createTransaction")
+  public HtmxResponse createTransaction(@ModelAttribute Transaction transaction, Model model) {
+    try {
+      transactionService.saveTransaction(transaction);
+      model.addAttribute("transactions", transactionService.getTransactions());
+      return new HtmxResponse()
+          .addTemplate("transactions :: transactions-list")
+          .addTrigger("clear-form");
+    } catch (StockSymbolNotFoundException e) {
+      model.addAttribute("transactions", transactionService.getTransactions());
+      model.addAttribute("error", e);
+      return new HtmxResponse()
+          .addTemplate("transactions :: transactions-list")
+          .addTemplate("transactions :: alert-container");
     }
+  }
 
     @PostMapping("/reset")
     public String resetTransactions(Model model) {
@@ -55,7 +64,11 @@ public class TransactionController {
 
     @PostMapping( "/updateTransaction")
     public String updateTransaction(Transaction transaction) {
-        transactionService.saveTransaction(transaction);
+        try {
+            transactionService.saveTransaction(transaction);
+        } catch (StockSymbolNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         return "redirect:/showAll";
     }
 

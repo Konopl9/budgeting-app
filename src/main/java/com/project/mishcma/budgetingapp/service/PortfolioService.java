@@ -11,9 +11,11 @@ public interface PortfolioService {
 
     Portfolio findPortfolioByName(String name);
 
-    List<Position> generatePortfolioPositionsByName(String name);
+    Portfolio generatePortfolioPositionsByName(String name);
 
     void deletePortfolioById(String name);
 
     void setCostOfInvestment(Portfolio portfolio);
+
+    void setTotalCost(Portfolio portfolio);
 }

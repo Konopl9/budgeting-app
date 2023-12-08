@@ -13,7 +13,7 @@
             </select>
         </div>
     </div>
-    <hr class="hr" />
+    <hr class="hr"/>
     <div class="row m-3">
         <div class="column">
             <h1>Positions</h1>
@@ -28,18 +28,23 @@
                     <th>Current Price</th>
                     <th>Quantity</th>
                     <th>Average Price</th>
-                    <th>Price Payed</th>
+                    <th>Position Value</th>
                     <th>% of Portfolio</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="position: ${positions}">
+                <tr th:each="position: ${portfolio.positions}">
                     <td><span th:text="${position.ticker}"></span></td>
-                    <td><span>##.##</span></td>
+                    <td><span th:text="${position.stockDataDTO.currentPrice} + '$'"></span></td>
                     <td><span th:text="${#numbers.formatDecimal(position.quantity, 0, 2)}"></span></td>
-                    <td><span th:text="${#numbers.formatDecimal(position.averagePrice, 0, 2)}"></span></td>
-                    <td><span>##.##</span></td>
-                    <td><span>##.##</span></td>
+                    <td><span th:text="${#numbers.formatDecimal(position.averagePrice, 0, 2)} + '$'"></span></td>
+                    <td><span th:text="${#numbers.formatDecimal(position.currentPositionValue, 0, 2)} + '$'"></span>
+                    </td>
+                    <td><span th:text="${#numbers.formatDecimal(position.percentOfPortfolio, 0, 2)} + '%'"></span></td>
+                </tr>
+                <tr>
+                    <td><span>Cash</span></td>
+                    <td><span th:text="${#numbers.formatDecimal(portfolio.cashBalance, 0, 2)} + '$'"></span></td>
                 </tr>
                 </tbody>
             </table>

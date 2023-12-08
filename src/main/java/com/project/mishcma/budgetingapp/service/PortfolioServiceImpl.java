@@ -32,9 +32,14 @@ public class PortfolioServiceImpl implements PortfolioService {
     }
 
     @Override
-    public List<Position> generatePortfolioPositionsByName(String name) {
+    public Portfolio generatePortfolioPositionsByName(String name) {
         Portfolio portfolio = findPortfolioByName(name);
-        return positionService.createPositionsFromTransactions(portfolio);
+        List<Position> positions = positionService.createPositionsFromTransactions(portfolio);
+        portfolio.setPositions(positions);
+        setCostOfInvestment(portfolio);
+        setTotalCost(portfolio);
+        portfolio.getPositions().forEach(position -> setPercentOfThePortfolio(position, portfolio));
+        return portfolio;
     }
 
     @Override
@@ -53,4 +58,24 @@ public class PortfolioServiceImpl implements PortfolioService {
 
         portfolio.setCostOfInvestments(costOfInvestment);
     }
+
+    @Override
+    public void setTotalCost(Portfolio portfolio) {
+        List<Position> positions = portfolio.getPositions();
+        double totalCosts = 0.0;
+
+        if (!positions.isEmpty()) {
+            totalCosts = positions.stream().mapToDouble(position -> position.getQuantity() * position.getStockDataDTO().getCurrentPrice()).sum();
+            totalCosts += portfolio.getCashBalance();
+        }
+
+        portfolio.setTotalCost(totalCosts);
+    }
+
+    public static void setPercentOfThePortfolio(Position position, Portfolio portfolio) {
+        if(position != null && portfolio.getTotalCost() != null) {
+            position.setPercentOfPortfolio((position.getStockDataDTO().getCurrentPrice() * position.getQuantity() / portfolio.getTotalCost()) * 100.0);
+        }
+    }
+
 }

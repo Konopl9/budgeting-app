@@ -13,6 +13,15 @@
                 Transactions</a>
         </div>
     </div>
+    <div id="alert-container" th:fragment="alert-container">
+        <div class="alert alert-success alert-dismissible" role="alert" th:if="${success}">
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div class="alert alert-danger alert-dismissible" role="alert" th:if="${error}">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     <div class="row mt-3">
         <div class="col">
             <table class="table table-bordered">
