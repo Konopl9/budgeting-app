@@ -4,16 +4,14 @@
 <body>
 <nav th:replace="~{fragmment/nav-bar-fragment :: nav_bar}"></nav>
 <main class="container mt-5">
-    <div class="row">
+    <div class="row mt-3">
         <h1>Transactions</h1>
     </div>
     <div class="row mt-3">
-        <div class="col">
-            <a hx-post="/reset" hx-target="#transactions-list" class="btn btn-primary" hx-swap="outerHTML">Reset
-                Transactions</a>
-        </div>
+        <a hx-post="/reset" hx-target="#transactions-list" class="btn btn-primary" hx-swap="outerHTML">Reset
+            Transactions</a>
     </div>
-    <div id="alert-container" th:fragment="alert-container">
+    <div class="row mt-3">
         <div class="alert alert-success alert-dismissible" role="alert" th:if="${success}">
             <span th:text="${success}"></span>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -22,6 +20,7 @@
             <span th:text="${error}"></span>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
+    </div>
     <div class="row mt-3">
         <div class="col">
             <table class="table table-bordered">
@@ -59,11 +58,7 @@
                 </tr>
                 </tbody>
                 <tfoot hx-swap-oob="true">
-                <form id="transaction-form"
-                      th:fragment="transaction-form"
-                      hx-post="/createTransaction"
-                      hx-target="#transactions-list"
-                      hx-swap="outerHTML">
+                <form method="post" th:action="@{/createTransaction}" th:object="${transaction}">
                     <tr>
                         <td>#</td>
                         <td><input type="text" id="ticker" name="ticker" class="form-control"></td>
@@ -75,10 +70,12 @@
                             </select>
                         </td>
                         <td><input type="date" id="date" name="date" class="form-control"></td>
-                        <td><input type="number" step="0.01" id="quantity" name="quantity" required class="form-control"></td>
+                        <td><input type="number" step="0.01" id="quantity" name="quantity" required
+                                   class="form-control"></td>
                         <td><input type="number" step="0.01" id="price" name="price" required class="form-control"></td>
                         <td>#</td>
-                        <td><input type="number" step="0.01" id="commission" name="commission" required class="form-control"></td>
+                        <td><input type="number" step="0.01" id="commission" name="commission" required
+                                   class="form-control"></td>
                         <td>
                             <button type="submit" class="btn btn-primary btn-sm">Add</button>
                         </td>
@@ -90,18 +87,5 @@
     </div>
 </main>
 </body>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Add an event listener for the custom event 'clear-form'
-        document.addEventListener('clear-form', function (event) {
-            // Clear the form fields
-            document.getElementById('ticker').value = '';
-            document.getElementById('date').value = '';
-            document.getElementById('quantity').value = '';
-            document.getElementById('price').value = '';
-            document.getElementById('commission').value = '';
-        });
-    });
-</script>
 <footer th:replace="~{fragmment/footer-fragment :: footer}"></footer>
 </html>

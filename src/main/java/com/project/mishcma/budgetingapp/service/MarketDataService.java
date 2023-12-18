@@ -11,8 +11,11 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface MarketDataService {
-	Optional<SymbolDTO> getStockSymbolData(String symbol);
-	Optional<List<SymbolDTO>> postStockSymbolsData(List<String> symbols) throws StockSymbolNotFoundException;
+	Optional<SymbolDTO> getStockSymbolData(String symbol) throws StockSymbolNotFoundException;
+
+  Optional<List<SymbolDTO>> postStockSymbolsData(List<String> symbols)
+      throws StockSymbolNotFoundException;
+
 	Optional<QuoteDTO> getStockQuoteData(String symbol);
 
 	Optional<List<StockDataDTO>> postPortfolioData(Set<String> symbols) throws StockDataNotFoundException;

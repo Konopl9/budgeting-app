@@ -2,23 +2,20 @@ package com.project.mishcma.budgetingapp.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
-import com.project.mishcma.budgetingapp.DTO.SymbolDTO;
 import com.project.mishcma.budgetingapp.entity.Portfolio;
 import com.project.mishcma.budgetingapp.entity.Transaction;
 import com.project.mishcma.budgetingapp.exception.StockSymbolNotFoundException;
 import com.project.mishcma.budgetingapp.helper.CSVHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class FileServiceImpl implements FileService {
@@ -65,14 +62,10 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public Integer processCsvFile(String fileName, String portfolioName) {
+    public Integer processCsvFile(String fileName, String portfolioName) throws StockSymbolNotFoundException {
         S3Object file = getFileByName(fileName);
         List<Transaction> transactionsToAdd = CSVHelper.csvToTransactions(file.getObjectContent().getDelegateStream());
-        try {
-            marketDataService.postStockSymbolsData(transactionsToAdd.stream().map(Transaction::getTicker).toList());
-        } catch (StockSymbolNotFoundException e) {
-            logger.error(e.getMessage());
-        }
+        marketDataService.postStockSymbolsData(transactionsToAdd.stream().map(Transaction::getTicker).toList());
         Portfolio portfolio = portfolioService.findPortfolioByName(portfolioName);
         transactionsToAdd.forEach(transaction -> transaction.setPortfolio(portfolio));
         return transactionService.saveTransactions(transactionsToAdd);

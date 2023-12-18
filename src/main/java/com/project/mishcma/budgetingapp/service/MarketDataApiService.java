@@ -25,6 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import static com.project.mishcma.budgetingapp.helper.StringUtils.extractErrorMessage;
+
 @Service
 public class MarketDataApiService implements MarketDataService {
 
@@ -36,14 +38,14 @@ public class MarketDataApiService implements MarketDataService {
     this.restTemplate = restTemplate;
   }
 
-  public Optional<SymbolDTO> getStockSymbolData(String symbol) {
+  public Optional<SymbolDTO> getStockSymbolData(String symbol) throws StockSymbolNotFoundException {
     String url =
         UriComponentsBuilder.fromUri(Endpoint.SYMBOL.url()).pathSegment(symbol).build().toString();
 
     ResponseEntity<String> jsonResponse = restTemplate.getForEntity(url, String.class);
 
-    if (jsonResponse.getStatusCode() != HttpStatus.OK) {
-      return Optional.empty();
+    if (jsonResponse.getStatusCode().value() == HttpStatus.NOT_FOUND.value()) {
+      throw new StockSymbolNotFoundException(extractErrorMessage(jsonResponse.getBody()));
     }
 
     SymbolDTO parsedSymbolDTO = parseSymbolData(jsonResponse.getBody());
@@ -68,7 +70,8 @@ public class MarketDataApiService implements MarketDataService {
     }
   }
 
-  public Optional<List<SymbolDTO>> postStockSymbolsData(List<String> symbols) throws StockSymbolNotFoundException {
+  public Optional<List<SymbolDTO>> postStockSymbolsData(List<String> symbols)
+      throws StockSymbolNotFoundException {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
     HttpEntity<StringList> requestEntity = new HttpEntity<>(new StringList(symbols), headers);
@@ -78,13 +81,15 @@ public class MarketDataApiService implements MarketDataService {
     ResponseEntity<String> jsonResponse =
         restTemplate.postForEntity(url, requestEntity, String.class);
 
-    if (jsonResponse.getStatusCode() != HttpStatus.OK) {
-      throw new StockSymbolNotFoundException("Unable to find a stock symbol in external API");
+    if (jsonResponse.getStatusCode().value() == HttpStatus.NOT_FOUND.value()) {
+      throw new StockSymbolNotFoundException(extractErrorMessage(jsonResponse.getBody()));
     }
 
     List<SymbolDTO> parsedSymbolDTOS = parseSymbolsData(jsonResponse.getBody());
 
-    if (parsedSymbolDTOS == null || parsedSymbolDTOS.isEmpty() || parsedSymbolDTOS.size() != symbols.size()) {
+    if (parsedSymbolDTOS == null
+        || parsedSymbolDTOS.isEmpty()
+        || parsedSymbolDTOS.size() != symbols.size()) {
       throw new StockSymbolNotFoundException("Unable to find a stock symbol in external API");
     }
 
@@ -136,15 +141,21 @@ public class MarketDataApiService implements MarketDataService {
     }
   }
 
-  public Optional<List<StockDataDTO>> postPortfolioData(Set<String> symbols) throws StockDataNotFoundException {
+  public Optional<List<StockDataDTO>> postPortfolioData(Set<String> symbols)
+      throws StockDataNotFoundException {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
-    HttpEntity<StringList> requestEntity = new HttpEntity<>(new StringList(symbols.stream().toList()), headers);
+    HttpEntity<StringList> requestEntity =
+        new HttpEntity<>(new StringList(symbols.stream().toList()), headers);
 
-    String url = UriComponentsBuilder.fromUri(Endpoint.PORTFOLIO.url()).pathSegment("findStockPrices").build().toString();
+    String url =
+        UriComponentsBuilder.fromUri(Endpoint.PORTFOLIO.url())
+            .pathSegment("findStockPrices")
+            .build()
+            .toString();
 
     ResponseEntity<String> jsonResponse =
-            restTemplate.postForEntity(url, requestEntity, String.class);
+        restTemplate.postForEntity(url, requestEntity, String.class);
 
     if (jsonResponse.getStatusCode() != HttpStatus.OK) {
       throw new StockDataNotFoundException("Unable to find a stock data in external API");
@@ -152,7 +163,9 @@ public class MarketDataApiService implements MarketDataService {
 
     List<StockDataDTO> parsedStockDataDTOS = parsePortfolioData(jsonResponse.getBody());
 
-    if (parsedStockDataDTOS == null || parsedStockDataDTOS.isEmpty() || parsedStockDataDTOS.size() != symbols.size()) {
+    if (parsedStockDataDTOS == null
+        || parsedStockDataDTOS.isEmpty()
+        || parsedStockDataDTOS.size() != symbols.size()) {
       throw new StockDataNotFoundException("Unable to find a stock symbol in external API");
     }
 
@@ -165,9 +178,9 @@ public class MarketDataApiService implements MarketDataService {
       return objectMapper.readValue(jsonResponse, new TypeReference<List<StockDataDTO>>() {});
     } catch (JsonProcessingException e) {
       logger.error(
-              "Error processing one of the Stock Data object from internal API {}: {}",
-              jsonResponse,
-              e.getMessage());
+          "Error processing one of the Stock Data object from internal API {}: {}",
+          jsonResponse,
+          e.getMessage());
       return null;
     }
   }
