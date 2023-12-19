@@ -23,6 +23,8 @@ public class Portfolio {
 
     private Double totalCost;
 
+    private Short numberOfPositions;
+
     @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL)
     private List<Transaction> transactions;
 

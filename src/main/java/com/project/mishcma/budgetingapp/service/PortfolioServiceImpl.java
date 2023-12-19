@@ -38,8 +38,13 @@ public class PortfolioServiceImpl implements PortfolioService {
         portfolio.setPositions(positions);
         setCostOfInvestment(portfolio);
         setTotalCost(portfolio);
+        setNumberOfPositions(portfolio);
         portfolio.getPositions().forEach(position -> setPercentOfThePortfolio(position, portfolio));
         return portfolio;
+    }
+
+    private void setNumberOfPositions(Portfolio portfolio) {
+        portfolio.setNumberOfPositions((short) portfolio.getPositions().size());
     }
 
     @Override

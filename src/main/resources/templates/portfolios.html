@@ -14,6 +14,45 @@
         </div>
     </div>
     <hr class="hr"/>
+    <div class="row">
+
+        <!-- Rectangle 1 -->
+        <div class="col-md-3 mb-3 h-100">
+            <div class="bg-primary p-3 text-white text-center h-100 height-fix">
+                <i class="bi bi-briefcase h2 mb-3"></i>
+                <h5>Total Portfolio Value</h5>
+                <p th:text=" '$' + ${#numbers.formatDecimal(portfolio.totalCost, 0, 2)}"></p>
+            </div>
+        </div>
+
+        <!-- Rectangle 2 -->
+        <div class="col-md-3 mb-3 h-100">
+            <div class="bg-success p-3 text-white text-center h-100 height-fix">
+                <i class="bi bi-cash h2 mb-3"></i>
+                <h5>Cash</h5>
+                <p th:text=" '$' + ${#numbers.formatDecimal(portfolio.cashBalance, 0, 2)}"></p>
+            </div>
+        </div>
+
+        <!-- Rectangle 3 -->
+        <div class="col-md-3 mb-3 h-100">
+            <div class="bg-warning p-3 text-dark text-center h-100 height-fix">
+                <i class="bi bi-currency-exchange h2 mb-3"></i>
+                <h5>Total Return</h5>
+                <p>IN PROGRESS</p>
+            </div>
+        </div>
+
+        <!-- Rectangle 4 -->
+        <div class="col-md-3 mb-3 h-100">
+            <div class="bg-info p-3 text-white text-center h-100 height-fix">
+                <i class="bi bi-hash h2 mb-3"></i>
+                <h5>Number of Holdings</h5>
+                <p th:text="${portfolio.numberOfPositions}"></p>
+            </div>
+        </div>
+
+    </div>
     <div class="row m-3">
         <div class="column">
             <h1>Positions</h1>
@@ -41,10 +80,6 @@
                     <td><span th:text="${#numbers.formatDecimal(position.currentPositionValue, 0, 2)} + '$'"></span>
                     </td>
                     <td><span th:text="${#numbers.formatDecimal(position.percentOfPortfolio, 0, 2)} + '%'"></span></td>
-                </tr>
-                <tr>
-                    <td><span>Cash</span></td>
-                    <td><span th:text="${#numbers.formatDecimal(portfolio.cashBalance, 0, 2)} + '$'"></span></td>
                 </tr>
                 </tbody>
             </table>
