@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-<head th:replace="~{fragmment/head-fragment :: html_head(title='Portfolios')}">
+<head th:insert="~{fragmment/head-fragment :: html_head(title='Portfolios')}">
 </head>
+
 <body>
 <nav th:replace="~{fragmment/nav-bar-fragment :: nav_bar}"></nav>
 <div class="container">
-    <div class="row m-3">
+    <div class="row mt-3">
         <div class="column">
             <p class="h1">Select the portfolio</p>
             <select class="form-select form-select-sm" aria-label=".form-select-sm example">
@@ -14,8 +15,7 @@
         </div>
     </div>
     <hr class="hr"/>
-    <div class="row">
-
+    <div class="row mt-3">
         <!-- Rectangle 1 -->
         <div class="col-md-3 mb-3 h-100">
             <div class="bg-primary p-3 text-white text-center h-100 height-fix">
@@ -51,7 +51,21 @@
                 <p th:text="${portfolio.numberOfPositions}"></p>
             </div>
         </div>
+    </div>
+    <hr class="hr"/>
+    <div class="row mt-3">
+        <div class="col-md-4">
+            <canvas id="pieChart"></canvas>
+            <script th:inline="javascript">
+                var allocationLabels = /*[[${allocationLabels}]]*/ [];
+                var allocationData = /*[[${allocationData}]]*/ [];
 
+                initPieChart(allocationLabels, allocationData);
+            </script>
+        </div>
+        <div class="col-md-8">
+            <canvas id="myChart1"></canvas>
+        </div>
     </div>
     <div class="row m-3">
         <div class="column">
@@ -86,6 +100,7 @@
         </div>
     </div>
 </div>
+<th:block th:replace="~{fragmment/head-fragment :: additional_scripts}"></th:block>
 </body>
 <footer th:replace="~{fragmment/footer-fragment :: footer}"></footer>
 </html>

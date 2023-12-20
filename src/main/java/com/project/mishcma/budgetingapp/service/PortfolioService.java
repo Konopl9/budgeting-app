@@ -1,21 +1,22 @@
 package com.project.mishcma.budgetingapp.service;
 
 import com.project.mishcma.budgetingapp.entity.Portfolio;
-import com.project.mishcma.budgetingapp.entity.Position;
-
 import java.util.List;
+import java.util.Map;
 
 public interface PortfolioService {
 
-    List<String> getPortfoliosNames();
+  List<String> getPortfoliosNames();
 
-    Portfolio findPortfolioByName(String name);
+  Portfolio findPortfolioByName(String name);
 
-    Portfolio generatePortfolioPositionsByName(String name);
+  Portfolio generatePortfolioPositionsByName(String name);
 
-    void deletePortfolioById(String name);
+  void deletePortfolioById(String name);
 
-    void setCostOfInvestment(Portfolio portfolio);
+  void setCostOfInvestment(Portfolio portfolio);
 
-    void setTotalCost(Portfolio portfolio);
+  void setTotalCost(Portfolio portfolio);
+
+  Map<String, Double> getPortfolioAllocation(Portfolio portfolio);
 }

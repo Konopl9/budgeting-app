@@ -7,7 +7,10 @@ import com.project.mishcma.budgetingapp.repository.PortfolioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class PortfolioServiceImpl implements PortfolioService {
@@ -41,6 +44,27 @@ public class PortfolioServiceImpl implements PortfolioService {
         setNumberOfPositions(portfolio);
         portfolio.getPositions().forEach(position -> setPercentOfThePortfolio(position, portfolio));
         return portfolio;
+    }
+
+    public Map<String, Double> getPortfolioAllocation(Portfolio portfolio) {
+        // Clone the list of positions to avoid modifying the original object
+        List<Position> positions = new ArrayList<>(portfolio.getPositions());
+
+        // Include cash as a separate position
+        Position cashPosition = new Position("Cash", portfolio.getCashBalance());
+        positions.add(cashPosition);
+
+        // Calculate total value of all positions
+        double totalValue = positions.stream()
+                .mapToDouble(Position::getCurrentPositionValue)
+                .sum();
+
+        // Calculate allocation percentages
+        return positions.stream()
+                .collect(Collectors.toMap(
+                        Position::getTicker,
+                        position -> (position.getCurrentPositionValue() / totalValue) * 100
+                ));
     }
 
     private void setNumberOfPositions(Portfolio portfolio) {

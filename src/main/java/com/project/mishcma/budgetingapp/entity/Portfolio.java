@@ -1,12 +1,10 @@
 package com.project.mishcma.budgetingapp.entity;
 
-
 import jakarta.persistence.*;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
 
 @Entity
 @Getter
@@ -14,25 +12,23 @@ import java.util.List;
 @NoArgsConstructor
 public class Portfolio {
 
-    @Id
-    private String name;
+  @Id private String name;
 
-    private Double cashBalance;
+  private Double cashBalance;
 
-    private Double costOfInvestments;
+  private Double costOfInvestments;
 
-    private Double totalCost;
+  private Double totalCost;
 
-    private Short numberOfPositions;
+  private Short numberOfPositions;
 
-    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL)
-    private List<Transaction> transactions;
+  @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL)
+  private List<Transaction> transactions;
 
-    @Transient
-    private List<Position> positions;
+  @Transient private List<Position> positions;
 
-    public Portfolio(String name, Double cashBalance) {
-        this.name = name;
-        this.cashBalance = cashBalance;
-    }
+  public Portfolio(String name, Double cashBalance) {
+    this.name = name;
+    this.cashBalance = cashBalance;
+  }
 }
