@@ -8,28 +8,25 @@ import com.project.mishcma.budgetingapp.repository.PortfolioRepository;
 import com.project.mishcma.budgetingapp.repository.TransactionRepository;
 import com.project.mishcma.budgetingapp.service.FileService;
 import com.project.mishcma.budgetingapp.service.PortfolioService;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
-import java.util.Date;
-import java.util.List;
-
-
 @Component
 public class Initializer {
 
-    Logger logger = LoggerFactory.getLogger(Initializer.class);
     private final TransactionRepository transactionRepository;
-
     private final PortfolioRepository portfolioRepository;
-
     private final PortfolioService portfolioService;
-
     private final FileService fileService;
+    Logger logger = LoggerFactory.getLogger(Initializer.class);
 
     public Initializer(TransactionRepository transactionRepository, FileService fileService, PortfolioRepository portfolioRepository, PortfolioService portfolioService) {
         this.transactionRepository = transactionRepository;
@@ -41,57 +38,44 @@ public class Initializer {
     @EventListener({ApplicationReadyEvent.class, TransactionResetEvent.class})
     public void reset() {
         logger.info("Pre-populated data:");
+
+        // Create three portfolios
         Portfolio portfolio = new Portfolio("My Portfolio", 1000.0);
-        Portfolio portfolio1 = new Portfolio("My Dividend Portfolio", 1000.0);
-        Portfolio portfolio2 = new Portfolio("My Value Portfolio", 1000.0);
+        Portfolio dividendPortfolio = new Portfolio("My Dividend Portfolio", 5000.0);
+        Portfolio valuePortfolio = new Portfolio("My Value Portfolio", 7500.0);
+
         portfolioRepository.save(portfolio);
-        portfolioRepository.save(portfolio1);
-        portfolioRepository.save(portfolio2);
+        portfolioRepository.save(dividendPortfolio);
+        portfolioRepository.save(valuePortfolio);
 
         logger.info("Number of transactions: " + transactionRepository.findAll().size());
 
         // Check if transactions are already populated in the database
-        if (transactionRepository.count() != 5) {
+        if (transactionRepository.count() != 25) {
             transactionRepository.deleteAll();
-            // Create and save 5 transactions
-            for (int i = 1; i <= 5; i++) {
-                Transaction transaction = new Transaction();
-                transaction.setTicker("AAPL");
-                transaction.setType(TransactionType.BUY);
-                transaction.setDate(Date.from(Instant.now()));
-                transaction.setQuantity(2d);
-                transaction.setPrice(100d);
-                transaction.setTotalAmount(200d);
-                transaction.setCommission(0.35d);
-                transaction.setPortfolio(portfolio);
-                transactionRepository.save(transaction);
-            }
 
-            for (int i = 1; i <= 5; i++) {
-                Transaction transaction = new Transaction();
-                transaction.setTicker("MSFT");
-                transaction.setType(TransactionType.BUY);
-                transaction.setDate(Date.from(Instant.now()));
-                transaction.setQuantity(2d);
-                transaction.setPrice(1000d);
-                transaction.setTotalAmount(2000d);
-                transaction.setCommission(0.35d);
-                transaction.setPortfolio(portfolio);
-                transactionRepository.save(transaction);
-            }
+            // Create and save transactions for 7 different stocks in 3 different portfolios
+            String[] tickers = {"AAPL", "MSFT", "GOOGL", "AMZN", "NFLX", "TSLA", "V"};
+            double[] prices = {150.0, 300.0, 2500.0, 3300.0, 600.0, 800.0, 240.0};
 
-            for (int i = 1; i <= 5; i++) {
-                Transaction transaction = new Transaction();
-                transaction.setTicker("GOOGL");
-                transaction.setType(TransactionType.BUY);
-                transaction.setDate(Date.from(Instant.now()));
-                transaction.setQuantity(10d);
-                transaction.setPrice(1000d);
-                transaction.setTotalAmount(2000d);
-                transaction.setCommission(0.35d);
-                transaction.setPortfolio(portfolio);
-                transactionRepository.save(transaction);
-            }
+            for (int i = 1; i <= 25; i++) {
+                    // Set the date to cover a span of 1 year
+                    LocalDateTime localDateTime = LocalDateTime.now().minusMonths(i);
+                    Instant instant = localDateTime.atZone(ZoneId.systemDefault()).toInstant();
+                    Date transactionDate = Date.from(instant);
+
+                    Transaction transaction = new Transaction(
+                            tickers[i % 7],
+                            TransactionType.BUY,
+                            transactionDate,
+                            2d,
+                            prices[i % 7],
+                            0.35d
+                    );
+
+                    transaction.setPortfolio(portfolio);
+                    transactionRepository.save(transaction);
+                }
         }
 
         // Print all data from the Transaction table
@@ -105,12 +89,10 @@ public class Initializer {
         portfolioService.setCostOfInvestment(portfolio);
         portfolioRepository.save(portfolio);
 
-
         // Print all data from S3
         logger.info("S3 Files before upload");
         for (String fileName : fileService.getFileNames()) {
             logger.info("File name: " + fileName);
         }
-
     }
 }
