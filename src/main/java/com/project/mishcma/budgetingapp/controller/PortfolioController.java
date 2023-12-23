@@ -29,23 +29,35 @@ public class PortfolioController {
 
   @GetMapping
   public String showAllForm(Model model) {
-    model.addAttribute("portfolioNames", portfolioService.getPortfoliosNames());
-    Portfolio portfolio = portfolioService.generatePortfolioPositionsByName("My Portfolio");
+    List<String> portfolioName = portfolioService.getPortfoliosNames();
+    model.addAttribute("portfolioNames", portfolioName);
+    model.addAttribute("selectedPortfolio", portfolioName.get(0));
+    Portfolio portfolio = portfolioService.generatePortfolioPositionsByName(portfolioName.get(0));
     model.addAttribute("portfolio", portfolio);
     Map<String, Double> allocationMap = portfolioService.getPortfolioAllocation(portfolio);
     List<String> allocationLabels = new ArrayList<>(allocationMap.keySet());
     List<Double> allocationData = new ArrayList<>(allocationMap.values());
     model.addAttribute("allocationLabels", allocationLabels);
     model.addAttribute("allocationData", allocationData);
-    List<Transaction> transactions = transactionService.getFiveTransactions();
+    List<Transaction> transactions = transactionService.getFiveTransactions(portfolio);
     model.addAttribute("transactions", transactions);
     return "portfolios";
   }
 
-  @GetMapping(value = "/{name}/positions")
+  @GetMapping(value = "/{name}")
   public String showPortfolioPositions(@PathVariable String name, Model model) {
+    List<String> portfolioName = portfolioService.getPortfoliosNames();
+    model.addAttribute("portfolioNames", portfolioName);
     Portfolio portfolio = portfolioService.generatePortfolioPositionsByName(name);
+    model.addAttribute("selectedPortfolio", name);
     model.addAttribute("portfolio", portfolio);
+    Map<String, Double> allocationMap = portfolioService.getPortfolioAllocation(portfolio);
+    List<String> allocationLabels = new ArrayList<>(allocationMap.keySet());
+    List<Double> allocationData = new ArrayList<>(allocationMap.values());
+    model.addAttribute("allocationLabels", allocationLabels);
+    model.addAttribute("allocationData", allocationData);
+    List<Transaction> transactions = transactionService.getFiveTransactions(portfolio);
+    model.addAttribute("transactions", transactions);
     return "portfolios";
   }
 }

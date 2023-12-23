@@ -27,6 +27,10 @@ public class Portfolio {
 
   @Transient private List<Position> positions;
 
+  public Portfolio(String name) {
+    this.name = name;
+  }
+
   public Portfolio(String name, Double cashBalance) {
     this.name = name;
     this.cashBalance = cashBalance;

@@ -10,10 +10,10 @@
     <div class="container mt-3">
         <div class="row">
             <div class="col-md-6 mb-2">
-                <a hx-post="/transactions/reset" hx-target="#transactions-list" class="btn btn-outline-primary w-100" hx-swap="outerHTML">Reset Transactions</a>
+                <a th:attr="hx-post=@{/transactions/reset(portfolioName=${selectedPortfolio})}" hx-target="#transactions-list" class="btn btn-outline-primary w-100" hx-swap="outerHTML">Reset Transactions</a>
             </div>
             <div class="col-md-6 mb-2">
-                <a th:href="@{/files}" class="btn btn-primary w-100">Upload Transactions</a>
+                <a th:href="@{/files(portfolioName=${selectedPortfolio})}" class="btn btn-primary w-100">Upload Transactions</a>
             </div>
         </div>
     </div>
@@ -44,11 +44,10 @@
                 </tr>
                 </thead>
                 <tbody hx-swap-oob="true">
-                <form method="post" th:action="@{/transactions/createTransaction}" th:object="${transaction}">
+                <form method="post" th:action="@{/transactions/createTransaction(portfolioName=${selectedPortfolio})}" th:object="${transaction}">
                     <tr class="table-primary">
                         <td>#</td>
                         <td><input type="text" id="ticker" name="ticker" class="form-control"></td>
-                        <input type="hidden" name="portfolio" value="My Portfolio">
                         <td>
                             <select id="type" name="type" class="form-control">
                                 <option value="BUY" selected>BUY</option>

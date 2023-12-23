@@ -38,7 +38,7 @@
                     <td><span th:text="${fileName}"></span></td>
                     <td>
                         <a class="btn btn-primary"
-                           th:attr="hx-post=@{/files/{fileName}(fileName=${fileName})}"
+                           th:attr="hx-post=@{/files/{fileName}(fileName=${fileName}, portfolioName=${selectedPortfolio})}"
                            hx-target="#alert-container"
                            hx-swap="innerHTML"
                            hx-confirm="Are you sure you want to import transaction from the file to your portfolio?"

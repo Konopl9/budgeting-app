@@ -58,11 +58,18 @@
 <div class="container">
     <div class="row mt-3">
         <div class="col-md-6 d-flex align-items-center">
-            <!-- Portfolio Select -->
             <label for="portfolioSelect" class="form-label me-2">Select Portfolio:</label>
-            <select id="portfolioSelect" class="form-select form-select-sm" aria-label=".form-select-sm example">
-                <option th:each="name : ${portfolioNames}" th:value="${name}" th:text="${name}"></option>
+            <select id="portfolioSelect" class="form-select form-select-sm" aria-label=".form-select-sm example"
+                    onchange="loadPortfolio(this.value)">
+                <option th:each="name : ${portfolioNames}" th:value="${name}" th:text="${name}" th:selected="${name eq selectedPortfolio}"></option>
             </select>
+            <script>
+                function loadPortfolio(selectedPortfolio) {
+                    $.get("/portfolios/" + selectedPortfolio, function (data) {
+                        $("body").html(data);
+                    });
+                }
+            </script>
         </div>
         <div class="col-md-6 text-end">
             <!-- Action Buttons -->
@@ -130,6 +137,9 @@
         </div>
         <div class="col-md-8">
             <canvas id="myChart1"></canvas>
+            <script th:inline="javascript">
+                initLineChart();
+            </script>
         </div>
     </div>
     <hr class="hr"/>
@@ -158,7 +168,8 @@
                     <td><span th:text="${position.stockDataDTO.currentPrice} + '$'"></span></td>
                     <td><span th:text="${#numbers.formatDecimal(position.quantity, 0, 2)}"></span></td>
                     <td><span th:text="${#numbers.formatDecimal(position.averagePrice, 0, 2)} + '$'"></span></td>
-                    <td><span th:text="${#numbers.formatDecimal(position.currentPositionValue, 0, 2)} + '$'"></span></td>
+                    <td><span th:text="${#numbers.formatDecimal(position.currentPositionValue, 0, 2)} + '$'"></span>
+                    </td>
                     <td><span th:text="${#numbers.formatDecimal(position.percentOfPortfolio, 0, 2)} + '%'"></span></td>
                 </tr>
                 </tbody>
@@ -172,7 +183,7 @@
         </div>
         <div class="col-md-6 text-end">
             <div class="d-flex justify-content-end">
-                <a type="button" class="btn btn-primary mx-2 btn-action" th:href="@{/transactions/showAll}">Manage Transactions</a>
+                <a type="button" class="btn btn-primary mx-2 btn-action" th:href="@{/transactions/showAll(portfolioName=${selectedPortfolio})}">Manage Transactions</a>
             </div>
         </div>
     </div>

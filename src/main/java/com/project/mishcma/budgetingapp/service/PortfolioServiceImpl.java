@@ -26,7 +26,7 @@ public class PortfolioServiceImpl implements PortfolioService {
 
     @Override
     public List<String> getPortfoliosNames() {
-        return portfolioRepository.findAll().stream().map(Portfolio::getName).toList();
+        return portfolioRepository.findAllByOrderByNameAsc().stream().map(Portfolio::getName).toList();
     }
 
     @Override
