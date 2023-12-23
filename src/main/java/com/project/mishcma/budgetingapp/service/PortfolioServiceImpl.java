@@ -38,6 +38,7 @@ public class PortfolioServiceImpl implements PortfolioService {
     public Portfolio generatePortfolioPositionsByName(String name) {
         Portfolio portfolio = findPortfolioByName(name);
         List<Position> positions = positionService.createPositionsFromTransactions(portfolio);
+        //List<Position> positions = new ArrayList<>();
         portfolio.setPositions(positions);
         setCostOfInvestment(portfolio);
         setTotalCost(portfolio);

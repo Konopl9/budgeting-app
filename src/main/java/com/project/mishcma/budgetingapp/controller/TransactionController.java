@@ -14,6 +14,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
+@RequestMapping("transactions")
 public class TransactionController {
 
   private final TransactionService transactionService;
@@ -25,13 +26,13 @@ public class TransactionController {
     this.publisher = publisher;
   }
 
-  @GetMapping(value = "/showAll")
+  @GetMapping( "/showAll")
   public String showAllForm(Model model) {
     model.addAttribute("transactions", transactionService.getTransactions());
     return "transactions";
   }
 
-  @GetMapping(value = "/showUpdateForm/{id}")
+  @GetMapping( "/showUpdateForm/{id}")
   public ModelAndView showUpdateForm(@PathVariable Long id) {
     ModelAndView mav = new ModelAndView("update-transaction");
     Transaction transaction = transactionService.findTransactionById(id);
@@ -39,10 +40,10 @@ public class TransactionController {
     return mav;
   }
 
-  @PostMapping(value = "/createTransaction")
+  @PostMapping( "/createTransaction")
   public RedirectView createTransaction(
       @ModelAttribute Transaction transaction, RedirectAttributes attributes) {
-    RedirectView rv = new RedirectView("/showAll", true);
+    RedirectView rv = new RedirectView("/transactions/showAll", true);
     try {
       transactionService.saveTransaction(transaction);
       attributes.addFlashAttribute("success", "Successfully added!");
@@ -67,7 +68,7 @@ public class TransactionController {
     } catch (StockSymbolNotFoundException e) {
       throw new RuntimeException(e);
     }
-    return "redirect:/showAll";
+    return "redirect:/transactions/showAll";
   }
 
   @ResponseBody

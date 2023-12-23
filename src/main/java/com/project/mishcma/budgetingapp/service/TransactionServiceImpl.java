@@ -3,6 +3,9 @@ package com.project.mishcma.budgetingapp.service;
 import com.project.mishcma.budgetingapp.entity.Transaction;
 import com.project.mishcma.budgetingapp.exception.StockSymbolNotFoundException;
 import com.project.mishcma.budgetingapp.repository.TransactionRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -25,6 +28,13 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public List<Transaction> getTransactions() {
         return transactionRepository.findAll();
+    }
+
+    @Override
+    public List<Transaction> getFiveTransactions() {
+        Pageable pageable = PageRequest.of(0, 5);
+        Page<Transaction> transactionPage = transactionRepository.findAllByOrderByDateDesc(pageable);
+        return transactionPage.stream().toList();
     }
 
     @Override

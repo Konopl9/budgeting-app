@@ -7,7 +7,7 @@
     <div class="row justify-content-center">
         <div class="col-md-6">
             <h2 class="mb-4">Update Transaction</h2>
-            <form method="post" id="transaction-form" th:action="@{/updateTransaction}" th:object="${transaction}">
+            <form method="post" id="transaction-form" th:action="@{/transactions/updateTransaction}" th:object="${transaction}">
                 <input type="hidden" id="id" name="id" th:field="*{id}">
                 <input type="hidden" id="ticker" name="ticker" th:field="*{ticker}">
                 <div class="mb-3">

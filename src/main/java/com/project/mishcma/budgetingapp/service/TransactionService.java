@@ -9,6 +9,8 @@ public interface TransactionService {
 
     List<Transaction> getTransactions();
 
+    List<Transaction> getFiveTransactions();
+
     Transaction saveTransaction(Transaction transaction) throws StockSymbolNotFoundException;
 
     int saveTransactions(List<Transaction> transactions);

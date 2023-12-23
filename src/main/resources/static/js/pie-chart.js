@@ -1,30 +1,16 @@
 
 // Define the function in the global scope
 function initPieChart(labels, data) {
-    /* Prepare data for Chart.js */
-    var colors = generateColors(data.length);
-
-    /* Chart.js Configuration */
     var ctx = document.getElementById('pieChart').getContext('2d');
     var pieChart = new Chart(ctx, {
-        type: 'pie',
+        type: 'doughnut',
         data: {
             labels: labels,
             datasets: [{
-                data: data,
-                backgroundColor: colors,
+                data: data
             }]
         }
     });
-}
-
-// Function to generate random colors
-function generateColors(count) {
-    var colors = [];
-    for (var i = 0; i < count; i++) {
-        colors.push('#' + Math.floor(Math.random() * 16777215).toString(16));
-    }
-    return colors;
 }
 document.addEventListener('DOMContentLoaded', function () {
     // Call the function to initialize the pie chart
