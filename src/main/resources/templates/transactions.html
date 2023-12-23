@@ -4,18 +4,32 @@
 <body>
 <nav th:replace="~{fragmment/nav-bar-fragment :: nav_bar}"></nav>
 <main class="container mt-5">
-    <div class="row">
+    <div class="row mt-3">
         <h1>Transactions</h1>
     </div>
+    <div class="container mt-3">
+        <div class="row">
+            <div class="col-md-6 mb-2">
+                <a hx-post="/transactions/reset" hx-target="#transactions-list" class="btn btn-outline-primary w-100" hx-swap="outerHTML">Reset Transactions</a>
+            </div>
+            <div class="col-md-6 mb-2">
+                <a th:href="@{/files}" class="btn btn-primary w-100">Upload Transactions</a>
+            </div>
+        </div>
+    </div>
     <div class="row mt-3">
-        <div class="col">
-            <a hx-post="/reset" hx-target="#transactions-list" class="btn btn-primary" hx-swap="outerHTML">Reset
-                Transactions</a>
+        <div class="alert alert-success alert-dismissible" role="alert" th:if="${success}">
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div class="alert alert-danger alert-dismissible" role="alert" th:if="${error}">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </div>
     <div class="row mt-3">
         <div class="col">
-            <table class="table table-bordered">
+            <table class="table table-bordered table-striped">
                 <thead class="thead-dark">
                 <tr>
                     <th>ID</th>
@@ -29,6 +43,33 @@
                     <th>Actions</th>
                 </tr>
                 </thead>
+                <tbody hx-swap-oob="true">
+                <form method="post" th:action="@{/transactions/createTransaction}" th:object="${transaction}">
+                    <tr class="table-primary">
+                        <td>#</td>
+                        <td><input type="text" id="ticker" name="ticker" class="form-control"></td>
+                        <input type="hidden" name="portfolio" value="My Portfolio">
+                        <td>
+                            <select id="type" name="type" class="form-control">
+                                <option value="BUY" selected>BUY</option>
+                                <option value="SELL">SELL</option>
+                            </select>
+                        </td>
+                        <td><input type="date" id="date" name="date" class="form-control"></td>
+                        <td><input type="number" step="0.01" id="quantity" name="quantity" required
+                                   class="form-control"></td>
+                        <td><input type="number" step="0.01" id="price" name="price" required class="form-control"></td>
+                        <td>#</td>
+                        <td><input type="number" step="0.01" id="commission" name="commission" required
+                                   class="form-control"></td>
+                        <td>
+                            <div class="btn-group w-100 h-100">
+                                <button type="submit" class="btn btn-primary btn-sm">Add</button>
+                            </div>
+                        </td>
+                    </tr>
+                </form>
+                </tbody>
                 <tbody th:fragment="transactions-list" id="transactions-list">
                 <tr th:each="transaction: ${transactions}">
                     <td><span th:text="${transaction.id}"></span></td>
@@ -41,58 +82,18 @@
                     <td><span th:text="${transaction.commission}"></span></td>
                     <td>
                         <div class="btn-group">
-                            <a th:href="@{/showUpdateForm/{id}(id=${transaction.id})}" class="btn btn-warning btn-sm">Edit</a>
-                            <a th:attr="hx-delete=@{/{id}(id=${transaction.id})}" hx-swap="outerHTML"
+                            <a th:href="@{/transactions/showUpdateForm/{id}(id=${transaction.id})}" class="btn btn-warning btn-sm">Edit</a>
+                            <a th:attr="hx-delete=@{/transactions/{id}(id=${transaction.id})}" hx-swap="outerHTML"
                                hx-target="closest tr" class="btn btn-danger btn-sm"
                                hx-confirm="Are you sure you want to delete this transaction?">Delete</a>
                         </div>
                     </td>
                 </tr>
                 </tbody>
-                <tfoot hx-swap-oob="true">
-                <form id="transaction-form"
-                      th:fragment="transaction-form"
-                      hx-post="/createTransaction"
-                      hx-target="#transactions-list"
-                      hx-swap="outerHTML">
-                    <tr>
-                        <td>#</td>
-                        <td><input type="text" id="ticker" name="ticker" class="form-control"></td>
-                        <input type="hidden" name="portfolio" value="My Portfolio">
-                        <td>
-                            <select id="type" name="type" class="form-control">
-                                <option value="BUY" selected>BUY</option>
-                                <option value="SELL">SELL</option>
-                            </select>
-                        </td>
-                        <td><input type="date" id="date" name="date" class="form-control"></td>
-                        <td><input type="number" step="0.01" id="quantity" name="quantity" required class="form-control"></td>
-                        <td><input type="number" step="0.01" id="price" name="price" required class="form-control"></td>
-                        <td>#</td>
-                        <td><input type="number" step="0.01" id="commission" name="commission" required class="form-control"></td>
-                        <td>
-                            <button type="submit" class="btn btn-primary btn-sm">Add</button>
-                        </td>
-                    </tr>
-                </form>
-                </tfoot>
             </table>
         </div>
     </div>
 </main>
 </body>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Add an event listener for the custom event 'clear-form'
-        document.addEventListener('clear-form', function (event) {
-            // Clear the form fields
-            document.getElementById('ticker').value = '';
-            document.getElementById('date').value = '';
-            document.getElementById('quantity').value = '';
-            document.getElementById('price').value = '';
-            document.getElementById('commission').value = '';
-        });
-    });
-</script>
 <footer th:replace="~{fragmment/footer-fragment :: footer}"></footer>
 </html>

@@ -1,51 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
-<head th:replace="~{fragmment/head-fragment :: html_head(title='Portfolios')}">
+<head th:insert="~{fragmment/head-fragment :: html_head(title='Portfolios')}">
 </head>
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .container {
+        background-color: #ffffff;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 50px;
+    }
+
+    .form-label {
+        color: #495057;
+        font-weight: bold;
+    }
+
+    #portfolioSelect {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        color: #495057;
+        background-color: #ffffff;
+    }
+
+    .btn-action {
+        font-weight: bold;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+
+    .custom-rectangle {
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+</style>
 <body>
 <nav th:replace="~{fragmment/nav-bar-fragment :: nav_bar}"></nav>
 <div class="container">
-    <div class="row m-3">
-        <div class="column">
-            <p class="h1">Select the portfolio</p>
-            <select class="form-select form-select-sm" aria-label=".form-select-sm example">
+    <div class="row mt-3">
+        <div class="col-md-6 d-flex align-items-center">
+            <!-- Portfolio Select -->
+            <label for="portfolioSelect" class="form-label me-2">Select Portfolio:</label>
+            <select id="portfolioSelect" class="form-select form-select-sm" aria-label=".form-select-sm example">
                 <option th:each="name : ${portfolioNames}" th:value="${name}" th:text="${name}"></option>
             </select>
         </div>
+        <div class="col-md-6 text-end">
+            <!-- Action Buttons -->
+            <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-success mx-2 btn-action" data-bs-toggle="modal"
+                        data-bs-target="#addPortfolioModal">Add
+                </button>
+                <button type="button" class="btn btn-primary mx-2 btn-action" data-bs-toggle="modal"
+                        data-bs-target="#editTitleModal">Edit
+                </button>
+                <button type="button" class="btn btn-danger mx-2 btn-action" data-bs-toggle="modal"
+                        data-bs-target="#deletePortfolioModal">Delete
+                </button>
+            </div>
+        </div>
     </div>
-    <hr class="hr" />
-    <div class="row m-3">
+    <hr class="hr"/>
+    <div class="row mt-3">
+        <!-- Rectangle 1 -->
+        <div class="col-md-3 mb-3 h-100">
+            <div class="bg-primary p-3 text-white text-center h-100 height-fix custom-rectangle">
+                <i class="bi bi-briefcase h2 mb-3"></i>
+                <h5>Total Portfolio Value</h5>
+                <p th:text=" '$' + ${#numbers.formatDecimal(portfolio.totalCost, 0, 2)}"></p>
+            </div>
+        </div>
+
+        <!-- Rectangle 2 -->
+        <div class="col-md-3 mb-3 h-100">
+            <div class="bg-success p-3 text-white text-center h-100 height-fix custom-rectangle">
+                <i class="bi bi-cash h2 mb-3"></i>
+                <h5>Cash</h5>
+                <p th:text=" '$' + ${#numbers.formatDecimal(portfolio.cashBalance, 0, 2)}"></p>
+            </div>
+        </div>
+
+        <!-- Rectangle 3 -->
+        <div class="col-md-3 mb-3 h-100">
+            <div class="bg-warning p-3 text-dark text-center h-100 height-fix custom-rectangle">
+                <i class="bi bi-currency-exchange h2 mb-3"></i>
+                <h5>Total Return</h5>
+                <p>IN PROGRESS</p>
+            </div>
+        </div>
+
+        <!-- Rectangle 4 -->
+        <div class="col-md-3 mb-3 h-100">
+            <div class="bg-info p-3 text-white text-center h-100 height-fix custom-rectangle">
+                <i class="bi bi-hash h2 mb-3"></i>
+                <h5>Number of Holdings</h5>
+                <p th:text="${portfolio.numberOfPositions}"></p>
+            </div>
+        </div>
+    </div>
+    <hr class="hr"/>
+    <div class="row mt-3">
+        <div class="col-md-4">
+            <canvas id="pieChart"></canvas>
+            <script th:inline="javascript">
+                var allocationLabels = /*[[${allocationLabels}]]*/ [];
+                var allocationData = /*[[${allocationData}]]*/ [];
+
+                initPieChart(allocationLabels, allocationData);
+            </script>
+        </div>
+        <div class="col-md-8">
+            <canvas id="myChart1"></canvas>
+        </div>
+    </div>
+    <hr class="hr"/>
+    <div class="row mt-3">
         <div class="column">
             <h1>Positions</h1>
         </div>
     </div>
-    <div class="row m-3">
+
+    <div class="row mt-3">
         <div class="col">
-            <table class="table table-bordered">
+            <table class="table table-bordered table-striped">
                 <thead class="thead-dark">
                 <tr>
                     <th>Ticker</th>
                     <th>Current Price</th>
                     <th>Quantity</th>
                     <th>Average Price</th>
-                    <th>Price Payed</th>
+                    <th>Position Value</th>
                     <th>% of Portfolio</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="position: ${positions}">
+                <tr th:each="position: ${portfolio.positions}">
                     <td><span th:text="${position.ticker}"></span></td>
-                    <td><span>##.##</span></td>
+                    <td><span th:text="${position.stockDataDTO.currentPrice} + '$'"></span></td>
                     <td><span th:text="${#numbers.formatDecimal(position.quantity, 0, 2)}"></span></td>
-                    <td><span th:text="${#numbers.formatDecimal(position.averagePrice, 0, 2)}"></span></td>
-                    <td><span>##.##</span></td>
-                    <td><span>##.##</span></td>
+                    <td><span th:text="${#numbers.formatDecimal(position.averagePrice, 0, 2)} + '$'"></span></td>
+                    <td><span th:text="${#numbers.formatDecimal(position.currentPositionValue, 0, 2)} + '$'"></span></td>
+                    <td><span th:text="${#numbers.formatDecimal(position.percentOfPortfolio, 0, 2)} + '%'"></span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <hr class="hr"/>
+    <div class="row mt-3">
+        <div class="col-md-6 d-flex align-items-center">
+            <h1>Transactions</h1>
+        </div>
+        <div class="col-md-6 text-end">
+            <div class="d-flex justify-content-end">
+                <a type="button" class="btn btn-primary mx-2 btn-action" th:href="@{/transactions/showAll}">Manage Transactions</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col">
+            <table class="table table-bordered table-striped">
+                <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Ticker</th>
+                    <th style="width: 120px;">Type</th>
+                    <th>Date</th>
+                    <th>Shares</th>
+                    <th>Price</th>
+                    <th>Total Amount</th>
+                    <th style="width: 80px;">Commission</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="transaction: ${transactions}">
+                    <td><span th:text="${transaction.id}"></span></td>
+                    <td><span th:text="${transaction.ticker}"></span></td>
+                    <td><span th:text="${transaction.type}"></span></td>
+                    <td><span th:text="${#dates.format(transaction.date, 'yyyy-MM-dd')}"></span></td>
+                    <td><span th:text="${transaction.quantity}"></span></td>
+                    <td><span th:text="${transaction.price}"></span></td>
+                    <td><span th:text="${transaction.totalAmount}"></span></td>
+                    <td><span th:text="${transaction.commission}"></span></td>
                 </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+<th:block th:replace="~{fragmment/head-fragment :: additional_scripts}"></th:block>
 </body>
 <footer th:replace="~{fragmment/footer-fragment :: footer}"></footer>
 </html>

@@ -1,7 +1,11 @@
 package com.project.mishcma.budgetingapp.service;
 
 import com.project.mishcma.budgetingapp.entity.Transaction;
+import com.project.mishcma.budgetingapp.exception.StockSymbolNotFoundException;
 import com.project.mishcma.budgetingapp.repository.TransactionRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -14,8 +18,11 @@ public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
 
-    public TransactionServiceImpl(TransactionRepository transactionRepository) {
+    private final MarketDataService marketDataService;
+
+    public TransactionServiceImpl(TransactionRepository transactionRepository, MarketDataService marketDataService) {
         this.transactionRepository = transactionRepository;
+        this.marketDataService = marketDataService;
     }
 
     @Override
@@ -24,7 +31,18 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Transaction saveTransaction(Transaction transaction) {
+    public List<Transaction> getFiveTransactions() {
+        Pageable pageable = PageRequest.of(0, 5);
+        Page<Transaction> transactionPage = transactionRepository.findAllByOrderByDateDesc(pageable);
+        return transactionPage.stream().toList();
+    }
+
+    @Override
+    public Transaction saveTransaction(Transaction transaction) throws StockSymbolNotFoundException {
+        String symbol = transaction.getTicker();
+        if(marketDataService.getStockSymbolData(symbol).isEmpty()) {
+            throw new StockSymbolNotFoundException("Unable to find a stock symbol {} " + symbol);
+        }
         if (transaction.getDate() == null) {
             transaction.setDate(Date.from(Instant.now()));
         }
