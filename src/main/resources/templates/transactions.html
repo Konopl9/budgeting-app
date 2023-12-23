@@ -29,7 +29,7 @@
     </div>
     <div class="row mt-3">
         <div class="col">
-            <table class="table table-bordered">
+            <table class="table table-bordered table-striped">
                 <thead class="thead-dark">
                 <tr>
                     <th>ID</th>
@@ -45,7 +45,7 @@
                 </thead>
                 <tbody hx-swap-oob="true">
                 <form method="post" th:action="@{/transactions/createTransaction}" th:object="${transaction}">
-                    <tr>
+                    <tr class="table-primary">
                         <td>#</td>
                         <td><input type="text" id="ticker" name="ticker" class="form-control"></td>
                         <input type="hidden" name="portfolio" value="My Portfolio">
@@ -63,7 +63,7 @@
                         <td><input type="number" step="0.01" id="commission" name="commission" required
                                    class="form-control"></td>
                         <td>
-                            <div class="btn-group w-100">
+                            <div class="btn-group w-100 h-100">
                                 <button type="submit" class="btn btn-primary btn-sm">Add</button>
                             </div>
                         </td>
