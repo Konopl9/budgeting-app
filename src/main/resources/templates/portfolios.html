@@ -56,33 +56,70 @@
 <body>
 <nav th:replace="~{fragmment/nav-bar-fragment :: nav_bar}"></nav>
 <div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div id="alert-container" th:fragment="alert-container">
+                <div class="alert alert-success alert-dismissible" role="alert" th:if="${success}">
+                    <span th:text="${success}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <div class="alert alert-danger alert-dismissible" role="alert" th:if="${error}">
+                    <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row mt-3">
         <div class="col-md-6 d-flex align-items-center">
             <label for="portfolioSelect" class="form-label me-2">Select Portfolio:</label>
             <select id="portfolioSelect" class="form-select form-select-sm" aria-label=".form-select-sm example"
-                    onchange="loadPortfolio(this.value)">
-                <option th:each="name : ${portfolioNames}" th:value="${name}" th:text="${name}" th:selected="${name eq selectedPortfolio}"></option>
+                    onchange="redirectToPortfolio(this)">
+                <option th:each="name : ${portfolioNames}" th:value="${name}" th:text="${name}"
+                        th:selected="${name eq selectedPortfolio}"></option>
             </select>
-            <script>
-                function loadPortfolio(selectedPortfolio) {
-                    $.get("/portfolios/" + selectedPortfolio, function (data) {
-                        $("body").html(data);
-                    });
-                }
-            </script>
         </div>
+
+        <script>
+            function redirectToPortfolio(select) {
+                var selectedPortfolio = select.value;
+                window.location.href = "/portfolios/" + selectedPortfolio;
+            }
+        </script>
         <div class="col-md-6 text-end">
             <!-- Action Buttons -->
             <div class="d-flex justify-content-end">
-                <button type="button" class="btn btn-success mx-2 btn-action" data-bs-toggle="modal"
-                        data-bs-target="#addPortfolioModal">Add
-                </button>
-                <button type="button" class="btn btn-primary mx-2 btn-action" data-bs-toggle="modal"
-                        data-bs-target="#editTitleModal">Edit
-                </button>
-                <button type="button" class="btn btn-danger mx-2 btn-action" data-bs-toggle="modal"
-                        data-bs-target="#deletePortfolioModal">Delete
-                </button>
+                <a type="button" class="btn btn-success mx-2 btn-action" data-bs-toggle="modal"
+                   data-bs-target="#addPortfolioModal">Add
+                </a>
+                <div class="modal fade" id="addPortfolioModal" tabindex="-1" aria-labelledby="addPortfolioModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addPortfolioModalLabel">Add Portfolio</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form th:action="@{/portfolios/add}" th:method="post" id="addPortfolioForm" th:object="${newPortfolio}">
+                                    <div class="mb-3 row">
+                                        <label for="name" class="col-sm-4 col-form-label">Portfolio Name:</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" class="form-control" id="name" name="name" required/>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a type="button" class="btn btn-primary mx-2 btn-action">Edit
+                </a>
+                <a th:href="@{'/portfolios/delete/' + ${selectedPortfolio}}"
+                   class="btn btn-danger mx-2 btn-action">Delete</a>
             </div>
         </div>
     </div>
@@ -93,7 +130,7 @@
             <div class="bg-primary p-3 text-white text-center h-100 height-fix custom-rectangle">
                 <i class="bi bi-briefcase h2 mb-3"></i>
                 <h5>Total Portfolio Value</h5>
-                <p th:text=" '$' + ${#numbers.formatDecimal(portfolio.totalCost, 0, 2)}"></p>
+                <p th:text=" '$' + ${#numbers.formatDecimal(portfolio.totalCost, 1, 2)}"></p>
             </div>
         </div>
 
@@ -102,7 +139,7 @@
             <div class="bg-success p-3 text-white text-center h-100 height-fix custom-rectangle">
                 <i class="bi bi-cash h2 mb-3"></i>
                 <h5>Cash</h5>
-                <p th:text=" '$' + ${#numbers.formatDecimal(portfolio.cashBalance, 0, 2)}"></p>
+                <p th:text=" '$' + ${#numbers.formatDecimal(portfolio.cashBalance, 1, 2)}"></p>
             </div>
         </div>
 
@@ -166,11 +203,11 @@
                 <tr th:each="position: ${portfolio.positions}">
                     <td><span th:text="${position.ticker}"></span></td>
                     <td><span th:text="${position.stockDataDTO.currentPrice} + '$'"></span></td>
-                    <td><span th:text="${#numbers.formatDecimal(position.quantity, 0, 2)}"></span></td>
-                    <td><span th:text="${#numbers.formatDecimal(position.averagePrice, 0, 2)} + '$'"></span></td>
-                    <td><span th:text="${#numbers.formatDecimal(position.currentPositionValue, 0, 2)} + '$'"></span>
+                    <td><span th:text="${#numbers.formatDecimal(position.quantity, 1, 2)}"></span></td>
+                    <td><span th:text="${#numbers.formatDecimal(position.averagePrice, 1, 2)} + '$'"></span></td>
+                    <td><span th:text="${#numbers.formatDecimal(position.currentPositionValue, 1, 2)} + '$'"></span>
                     </td>
-                    <td><span th:text="${#numbers.formatDecimal(position.percentOfPortfolio, 0, 2)} + '%'"></span></td>
+                    <td><span th:text="${#numbers.formatDecimal(position.percentOfPortfolio, 1, 2)} + '%'"></span></td>
                 </tr>
                 </tbody>
             </table>
@@ -183,7 +220,8 @@
         </div>
         <div class="col-md-6 text-end">
             <div class="d-flex justify-content-end">
-                <a type="button" class="btn btn-primary mx-2 btn-action" th:href="@{/transactions/showAll(portfolioName=${selectedPortfolio})}">Manage Transactions</a>
+                <a type="button" class="btn btn-primary mx-2 btn-action"
+                   th:href="@{/transactions/showAll(portfolioName=${selectedPortfolio})}">Manage Transactions</a>
             </div>
         </div>
     </div>
