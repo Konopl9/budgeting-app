@@ -4,14 +4,15 @@ import com.project.mishcma.budgetingapp.entity.Portfolio;
 import com.project.mishcma.budgetingapp.entity.Transaction;
 import com.project.mishcma.budgetingapp.service.PortfolioService;
 import com.project.mishcma.budgetingapp.service.TransactionService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
-
+import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("portfolios")
@@ -27,13 +28,35 @@ public class PortfolioController {
   }
 
   @GetMapping("/{name}")
-  public String showPortfolioPositions(@PathVariable String name, ModelMap model) {
+  public String showPortfolioPositions(@PathVariable String name, Model model) {
     return showPortfolioPage(name, model);
   }
 
   @PostMapping("/add")
-  public String addPortfolio(@ModelAttribute Portfolio newPortfolio, ModelMap model) {
-    return addOrUpdatePortfolio(newPortfolio, model);
+  public String addPortfolio(@ModelAttribute Portfolio newPortfolio, Model model) {
+    if (portfolioService.isPortfolioNameExists(newPortfolio.getName())) {
+      model.addAttribute("error", "Portfolio name already exists");
+      return showPortfolioPage(portfolioService.getPortfoliosNames().get(0), model);
+    }
+
+    Portfolio addedPortfolio = portfolioService.save(newPortfolio);
+    return "redirect:/portfolios/" + addedPortfolio.getName();
+  }
+
+  @PostMapping("/updateCash")
+  private String updateCash(
+      @Valid @ModelAttribute("cashForm") Portfolio newPortfolio,
+      BindingResult bindingResult,
+      Model model) {
+    if (bindingResult.hasErrors()) {
+      model.addAttribute("error", "Unable to update cash position with negative value");
+      return showPortfolioPage(newPortfolio.getName(), model);
+    }
+
+    Portfolio portfolioToUpdate = portfolioService.findPortfolioByName(newPortfolio.getName());
+    portfolioToUpdate.setCashBalance(newPortfolio.getCashBalance());
+    portfolioService.save(portfolioToUpdate);
+    return "redirect:/portfolios/" + portfolioToUpdate.getName();
   }
 
   @GetMapping("/delete/{name}")
@@ -47,7 +70,7 @@ public class PortfolioController {
     return "redirect:/portfolios/" + portfolioName.get(0);
   }
 
-  private String showPortfolioPage(String name, ModelMap model) {
+  private String showPortfolioPage(String name, Model model) {
     List<String> portfolioName = portfolioService.getPortfoliosNames();
     model.addAttribute("portfolioNames", portfolioName);
     model.addAttribute("selectedPortfolio", name);
@@ -62,15 +85,5 @@ public class PortfolioController {
     List<Transaction> transactions = transactionService.getFiveTransactions(portfolio);
     model.addAttribute("transactions", transactions);
     return "portfolios";
-  }
-
-  private String addOrUpdatePortfolio(Portfolio newPortfolio, ModelMap model) {
-    if (portfolioService.isPortfolioNameExists(newPortfolio.getName())) {
-      model.addAttribute("error", "Portfolio name already exists");
-      return showPortfolioPage(portfolioService.getPortfoliosNames().get(0), model);
-    }
-
-    Portfolio addedPortfolio = portfolioService.save(newPortfolio);
-    return "redirect:/portfolios/" + addedPortfolio.getName();
   }
 }

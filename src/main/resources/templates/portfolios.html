@@ -79,7 +79,6 @@
                         th:selected="${name eq selectedPortfolio}"></option>
             </select>
         </div>
-
         <script>
             function redirectToPortfolio(select) {
                 var selectedPortfolio = select.value;
@@ -92,24 +91,28 @@
                 <a type="button" class="btn btn-success mx-2 btn-action" data-bs-toggle="modal"
                    data-bs-target="#addPortfolioModal">Add
                 </a>
-                <div class="modal fade" id="addPortfolioModal" tabindex="-1" aria-labelledby="addPortfolioModalLabel" aria-hidden="true">
+                <div class="modal fade" id="addPortfolioModal" tabindex="-1" aria-labelledby="addPortfolioModalLabel"
+                     aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="addPortfolioModalLabel">Add Portfolio</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <form th:action="@{/portfolios/add}" th:method="post" id="addPortfolioForm" th:object="${newPortfolio}">
+                                <form th:action="@{/portfolios/add}" th:method="post" id="addPortfolioForm"
+                                      th:object="${newPortfolio}">
                                     <div class="mb-3 row">
-                                        <label for="name" class="col-sm-4 col-form-label">Portfolio Name:</label>
+                                        <label for="portfolio_name" class="col-sm-4 col-form-label">Portfolio Name:</label>
                                         <div class="col-sm-8">
-                                            <input type="text" class="form-control" id="name" name="name" required/>
+                                            <input type="text" class="form-control" id="portfolio_name" th:field="*{name}" required/>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="submit" class="btn btn-primary">Save</button>
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel
+                                        </button>
                                     </div>
                                 </form>
                             </div>
@@ -119,7 +122,9 @@
                 <a type="button" class="btn btn-primary mx-2 btn-action">Edit
                 </a>
                 <a th:href="@{'/portfolios/delete/' + ${selectedPortfolio}}"
-                   class="btn btn-danger mx-2 btn-action">Delete</a>
+                   class="btn btn-danger mx-2 btn-action"
+                   th:data-confirm-delete="|Are you sure you want to delete ${portfolio.name}?|"
+                   onclick="if (!confirm(this.getAttribute('data-confirm-delete'))) return false">Delete</a>
             </div>
         </div>
     </div>
@@ -139,7 +144,14 @@
             <div class="bg-success p-3 text-white text-center h-100 height-fix custom-rectangle">
                 <i class="bi bi-cash h2 mb-3"></i>
                 <h5>Cash</h5>
-                <p th:text=" '$' + ${#numbers.formatDecimal(portfolio.cashBalance, 1, 2)}"></p>
+                <form th:action="@{updateCash}" th:object="${portfolio}" method="post">
+                    <div class="input-group mb-3">
+                        <input type="hidden" th:field="*{name}">
+                        <input type="number" id="cash" th:field="*{cashBalance}" class="form-control"
+                               aria-describedby="button-addon1">
+                        <button class="btn btn-outline-light" type="submit" id="button-addon1">Update</button>
+                    </div>
+                </form>
             </div>
         </div>
 
