@@ -19,4 +19,8 @@ public interface PortfolioService {
   void setTotalCost(Portfolio portfolio);
 
   Map<String, Double> getPortfolioAllocation(Portfolio portfolio);
+
+  boolean isPortfolioNameExists(String portfolioName);
+
+  Portfolio save(Portfolio portfolio);
 }

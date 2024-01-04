@@ -2,6 +2,8 @@ package com.project.mishcma.budgetingapp.entity;
 
 import jakarta.persistence.*;
 import java.util.List;
+
+import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,6 +16,7 @@ public class Portfolio {
 
   @Id private String name;
 
+  @Positive
   private Double cashBalance;
 
   private Double costOfInvestments;
@@ -26,6 +29,10 @@ public class Portfolio {
   private List<Transaction> transactions;
 
   @Transient private List<Position> positions;
+
+  public Portfolio(String name) {
+    this.name = name;
+  }
 
   public Portfolio(String name, Double cashBalance) {
     this.name = name;

@@ -25,6 +25,9 @@ public class PositionServiceImpl implements PositionService {
     @Override
     public List<Position> createPositionsFromTransactions(Portfolio portfolio) {
         List<Transaction> transactions = portfolio.getTransactions();
+        if (transactions.isEmpty()) {
+            return new ArrayList<>();
+        }
         // Sort transactions by date to preserve the order
         transactions.sort(Comparator.comparing(Transaction::getDate));
 

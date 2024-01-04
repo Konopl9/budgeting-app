@@ -1,8 +1,10 @@
 package com.project.mishcma.budgetingapp.controller;
 
+import com.project.mishcma.budgetingapp.entity.Portfolio;
 import com.project.mishcma.budgetingapp.entity.Transaction;
 import com.project.mishcma.budgetingapp.event.TransactionResetEvent;
 import com.project.mishcma.budgetingapp.exception.StockSymbolNotFoundException;
+import com.project.mishcma.budgetingapp.service.PortfolioService;
 import com.project.mishcma.budgetingapp.service.TransactionService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.MediaType;
@@ -21,14 +23,15 @@ public class TransactionController {
   private final ApplicationEventPublisher publisher;
 
   public TransactionController(
-      TransactionService transactionService, ApplicationEventPublisher publisher) {
+          TransactionService transactionService, ApplicationEventPublisher publisher) {
     this.transactionService = transactionService;
     this.publisher = publisher;
   }
 
   @GetMapping( "/showAll")
-  public String showAllForm(Model model) {
-    model.addAttribute("transactions", transactionService.getTransactions());
+  public String showAllForm(@RequestParam(name = "portfolioName") String portfolioName, Model model) {
+    model.addAttribute("transactions", transactionService.getTransactions(portfolioName));
+    model.addAttribute("selectedPortfolio", portfolioName);
     return "transactions";
   }
 
@@ -42,29 +45,31 @@ public class TransactionController {
 
   @PostMapping( "/createTransaction")
   public RedirectView createTransaction(
-      @ModelAttribute Transaction transaction, RedirectAttributes attributes) {
+      @ModelAttribute Transaction transaction, @RequestParam(name = "portfolioName") String portfolioName, RedirectAttributes attributes) {
     RedirectView rv = new RedirectView("/transactions/showAll", true);
     try {
-      transactionService.saveTransaction(transaction);
+      transactionService.saveTransaction(portfolioName, transaction);
       attributes.addFlashAttribute("success", "Successfully added!");
+      attributes.addAttribute("portfolioName", portfolioName);
       return rv;
     } catch (StockSymbolNotFoundException e) {
       attributes.addFlashAttribute("error", e.getMessage());
+      attributes.addAttribute("portfolioName", portfolioName);
       return rv;
     }
   }
 
   @PostMapping("/reset")
-  public String resetTransactions(Model model) {
+  public String resetTransactions(@RequestParam(name = "portfolioName") String portfolioName, Model model) {
     publisher.publishEvent(new TransactionResetEvent());
-    model.addAttribute("transactions", transactionService.getTransactions());
+    model.addAttribute("transactions", transactionService.getTransactions(portfolioName));
     return "transactions :: transactions-list";
   }
 
   @PostMapping("/updateTransaction")
-  public String updateTransaction(Transaction transaction) {
+  public String updateTransaction(String portfolioName, Transaction transaction) {
     try {
-      transactionService.saveTransaction(transaction);
+      transactionService.saveTransaction(portfolioName, transaction);
     } catch (StockSymbolNotFoundException e) {
       throw new RuntimeException(e);
     }

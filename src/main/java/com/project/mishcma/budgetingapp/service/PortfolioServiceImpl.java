@@ -5,12 +5,11 @@ import com.project.mishcma.budgetingapp.entity.Position;
 import com.project.mishcma.budgetingapp.entity.Transaction;
 import com.project.mishcma.budgetingapp.repository.PortfolioRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Service;
 
 @Service
 public class PortfolioServiceImpl implements PortfolioService {
@@ -24,9 +23,15 @@ public class PortfolioServiceImpl implements PortfolioService {
         this.positionService = positionService;
     }
 
+    public static void setPercentOfThePortfolio(Position position, Portfolio portfolio) {
+        if(position != null && portfolio.getTotalCost() != null) {
+            position.setPercentOfPortfolio((position.getStockDataDTO().getCurrentPrice() * position.getQuantity() / portfolio.getTotalCost()) * 100.0);
+        }
+    }
+
     @Override
     public List<String> getPortfoliosNames() {
-        return portfolioRepository.findAll().stream().map(Portfolio::getName).toList();
+        return portfolioRepository.findAllByOrderByNameAsc().stream().map(Portfolio::getName).toList();
     }
 
     @Override
@@ -57,15 +62,28 @@ public class PortfolioServiceImpl implements PortfolioService {
 
         // Calculate total value of all positions
         double totalValue = positions.stream()
-                .mapToDouble(Position::getCurrentPositionValue)
+                .mapToDouble(position -> position.getCurrentPositionValue() != null ? position.getCurrentPositionValue() : 0.0)
                 .sum();
 
         // Calculate allocation percentages
         return positions.stream()
                 .collect(Collectors.toMap(
                         Position::getTicker,
-                        position -> (position.getCurrentPositionValue() / totalValue) * 100
+                        position -> position.getCurrentPositionValue() != null ? position.getCurrentPositionValue() / totalValue * 100 : 0.0
                 ));
+    }
+
+    @Override
+    public boolean isPortfolioNameExists(String portfolioName) {
+        return portfolioRepository.findById(portfolioName).isPresent();
+    }
+
+    @Override
+    public Portfolio save(Portfolio portfolio) {
+        if (portfolio.getCashBalance() == null) {
+            portfolio.setCashBalance(0.0);
+        }
+        return portfolioRepository.save(portfolio);
     }
 
     private void setNumberOfPositions(Portfolio portfolio) {
@@ -100,12 +118,6 @@ public class PortfolioServiceImpl implements PortfolioService {
         }
 
         portfolio.setTotalCost(totalCosts);
-    }
-
-    public static void setPercentOfThePortfolio(Position position, Portfolio portfolio) {
-        if(position != null && portfolio.getTotalCost() != null) {
-            position.setPercentOfPortfolio((position.getStockDataDTO().getCurrentPrice() * position.getQuantity() / portfolio.getTotalCost()) * 100.0);
-        }
     }
 
 }

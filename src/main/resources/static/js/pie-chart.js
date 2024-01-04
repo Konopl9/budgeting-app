@@ -15,9 +15,10 @@ function initPieChart(labels, data) {
 document.addEventListener('DOMContentLoaded', function () {
     // Call the function to initialize the pie chart
     initPieChart(allocationLabels, allocationData);
+    initLineChart();
 });
 
-document.addEventListener('DOMContentLoaded', function () {
+function initLineChart() {
     var ctx = document.getElementById('myChart1').getContext('2d');
     var myChart = new Chart(ctx, {
         type: 'line', // Specify the chart type (e.g., 'bar', 'line', 'pie', etc.)
@@ -31,4 +32,4 @@ document.addEventListener('DOMContentLoaded', function () {
             // Add any additional options here
         }
     });
-});
+}
