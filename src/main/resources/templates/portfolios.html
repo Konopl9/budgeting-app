@@ -138,14 +138,13 @@
                 <p th:text=" '$' + ${#numbers.formatDecimal(portfolio.totalCost, 1, 2)}"></p>
             </div>
         </div>
-
         <!-- Rectangle 2 -->
         <div class="col-md-3 mb-3 h-100">
             <div class="bg-success p-3 text-white text-center h-100 height-fix custom-rectangle">
                 <i class="bi bi-cash h2 mb-3"></i>
                 <h5>Cash</h5>
                 <form th:action="@{updateCash}" th:object="${portfolio}" method="post">
-                    <div class="input-group mb-3">
+                    <div class="input-group">
                         <input type="hidden" th:field="*{name}">
                         <input type="number" id="cash" th:field="*{cashBalance}" class="form-control"
                                aria-describedby="button-addon1">
@@ -154,7 +153,6 @@
                 </form>
             </div>
         </div>
-
         <!-- Rectangle 3 -->
         <div class="col-md-3 mb-3 h-100">
             <div class="bg-warning p-3 text-dark text-center h-100 height-fix custom-rectangle">
@@ -163,7 +161,6 @@
                 <p>IN PROGRESS</p>
             </div>
         </div>
-
         <!-- Rectangle 4 -->
         <div class="col-md-3 mb-3 h-100">
             <div class="bg-info p-3 text-white text-center h-100 height-fix custom-rectangle">
