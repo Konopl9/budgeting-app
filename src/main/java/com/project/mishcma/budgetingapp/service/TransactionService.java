@@ -19,4 +19,8 @@ public interface TransactionService {
     Transaction findTransactionById(Long id);
 
     void deleteTransaction(Long id);
+
+    List<Transaction> findAll();
+
+    void deleteAll();
 }

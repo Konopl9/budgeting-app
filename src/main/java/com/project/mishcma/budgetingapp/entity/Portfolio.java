@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.util.List;
 
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,7 +17,7 @@ public class Portfolio {
 
   @Id private String name;
 
-  @Positive
+  @PositiveOrZero
   private Double cashBalance;
 
   private Double costOfInvestments;

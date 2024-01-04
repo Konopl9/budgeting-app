@@ -9,7 +9,7 @@
 
     .container {
         background-color: #ffffff;
-        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         padding: 20px;
         border-radius: 10px;
         margin-top: 50px;
@@ -89,7 +89,7 @@
             <!-- Action Buttons -->
             <div class="d-flex justify-content-end">
                 <a type="button" class="btn btn-success mx-2 btn-action" data-bs-toggle="modal"
-                   data-bs-target="#addPortfolioModal">Add
+                   data-bs-target="#addPortfolioModal">Add Portfolio
                 </a>
                 <div class="modal fade" id="addPortfolioModal" tabindex="-1" aria-labelledby="addPortfolioModalLabel"
                      aria-hidden="true">
@@ -119,12 +119,10 @@
                         </div>
                     </div>
                 </div>
-                <a type="button" class="btn btn-primary mx-2 btn-action">Edit
-                </a>
                 <a th:href="@{'/portfolios/delete/' + ${selectedPortfolio}}"
                    class="btn btn-danger mx-2 btn-action"
                    th:data-confirm-delete="|Are you sure you want to delete ${portfolio.name}?|"
-                   onclick="if (!confirm(this.getAttribute('data-confirm-delete'))) return false">Delete</a>
+                   onclick="if (!confirm(this.getAttribute('data-confirm-delete'))) return false">Delete Portfolio</a>
             </div>
         </div>
     </div>
@@ -158,7 +156,7 @@
             <div class="bg-warning p-3 text-dark text-center h-100 height-fix custom-rectangle">
                 <i class="bi bi-currency-exchange h2 mb-3"></i>
                 <h5>Total Return</h5>
-                <p>IN PROGRESS</p>
+                <p th:text="'IN PROGRESS'"></p>
             </div>
         </div>
         <!-- Rectangle 4 -->
@@ -258,7 +256,7 @@
                     <td><span th:text="${#dates.format(transaction.date, 'yyyy-MM-dd')}"></span></td>
                     <td><span th:text="${transaction.quantity}"></span></td>
                     <td><span th:text="${transaction.price}"></span></td>
-                    <td><span th:text="${transaction.totalAmount}"></span></td>
+                    <td><span th:text="${#numbers.formatDecimal(transaction.totalAmount, 1, 2)}"></span></td>
                     <td><span th:text="${transaction.commission}"></span></td>
                 </tr>
                 </tbody>

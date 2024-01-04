@@ -2,6 +2,7 @@ package com.project.mishcma.budgetingapp.service;
 
 import com.project.mishcma.budgetingapp.entity.Portfolio;
 import com.project.mishcma.budgetingapp.entity.Transaction;
+import com.project.mishcma.budgetingapp.entity.TransactionType;
 import com.project.mishcma.budgetingapp.exception.StockSymbolNotFoundException;
 import com.project.mishcma.budgetingapp.repository.TransactionRepository;
 import org.springframework.data.domain.Page;
@@ -54,7 +55,13 @@ public class TransactionServiceImpl implements TransactionService {
         if (transaction.getDate() == null) {
             transaction.setDate(Date.from(Instant.now()));
         }
-        transaction.setTotalAmount(transaction.getQuantity()*transaction.getPrice());
+        double totalAmount;
+        if(TransactionType.SELL.equals(transaction.getType())) {
+            totalAmount = transaction.getQuantity() * transaction.getPrice() - transaction.getCommission();
+        } else {
+            totalAmount = transaction.getQuantity() * transaction.getPrice() + transaction.getCommission();
+        }
+        transaction.setTotalAmount(totalAmount);
         return transactionRepository.save(transaction);
     }
 
@@ -72,6 +79,16 @@ public class TransactionServiceImpl implements TransactionService {
     public void deleteTransaction(Long id) {
         transactionRepository.deleteById(id);
         transactionRepository.findAll().forEach(System.out::println);
+    }
+
+    @Override
+    public List<Transaction> findAll() {
+        return transactionRepository.findAll();
+    }
+
+    @Override
+    public void deleteAll() {
+        transactionRepository.deleteAll();
     }
 
     private Transaction unWrapTransaction(Optional<Transaction> wrappedTransaction) {
