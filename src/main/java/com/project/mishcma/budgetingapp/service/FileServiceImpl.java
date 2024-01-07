@@ -2,7 +2,6 @@ package com.project.mishcma.budgetingapp.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
-import com.project.mishcma.budgetingapp.entity.Portfolio;
 import com.project.mishcma.budgetingapp.entity.Transaction;
 import com.project.mishcma.budgetingapp.exception.StockSymbolNotFoundException;
 import com.project.mishcma.budgetingapp.helper.CSVHelper;
@@ -20,20 +19,16 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class FileServiceImpl implements FileService {
 
-    private final Logger logger = LoggerFactory.getLogger(FileServiceImpl.class);
-
     private static final String BUCKET_NAME = "budgeting-app-storage";
     private final AmazonS3 s3Client;
     private final TransactionService transactionService;
 
-    private final PortfolioService portfolioService;
 
     private final MarketDataService marketDataService;
 
-    public FileServiceImpl(AmazonS3 s3Client, TransactionService transactionService, PortfolioService portfolioService, MarketDataService marketDataService) {
+    public FileServiceImpl(AmazonS3 s3Client, TransactionService transactionService, MarketDataService marketDataService) {
         this.s3Client = s3Client;
         this.transactionService = transactionService;
-        this.portfolioService = portfolioService;
         this.marketDataService = marketDataService;
     }
 
@@ -66,9 +61,7 @@ public class FileServiceImpl implements FileService {
         S3Object file = getFileByName(fileName);
         List<Transaction> transactionsToAdd = CSVHelper.csvToTransactions(file.getObjectContent().getDelegateStream());
         marketDataService.postStockSymbolsData(transactionsToAdd.stream().map(Transaction::getTicker).toList());
-        Portfolio portfolio = portfolioService.findPortfolioByName(portfolioName);
-        transactionsToAdd.forEach(transaction -> transaction.setPortfolio(portfolio));
-        return transactionService.saveTransactions(transactionsToAdd);
+        return transactionService.saveTransactions(portfolioName, transactionsToAdd);
     }
 
     @Override
