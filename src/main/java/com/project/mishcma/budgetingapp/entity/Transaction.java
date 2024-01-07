@@ -1,6 +1,9 @@
 package com.project.mishcma.budgetingapp.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import java.util.Date;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,16 +25,17 @@ public class Transaction {
   @Enumerated(EnumType.STRING)
   private TransactionType type;
 
+  @PastOrPresent
   @DateTimeFormat(pattern = "yyyy-MM-dd")
   private Date date;
 
-  private Double quantity;
+  @Positive private Double quantity;
 
-  private Double price;
+  @Positive private Double price;
 
-  private Double totalAmount;
+  private Double changeInCash;
 
-  private Double commission;
+  @PositiveOrZero private Double commission;
 
   @ManyToOne
   @JoinColumn(name = "portfolio_name")
@@ -50,7 +54,7 @@ public class Transaction {
     this.quantity = quantity;
     this.price = price;
     this.commission = commission;
-    this.totalAmount = quantity * price - commission;
+    this.changeInCash = quantity * price - commission;
   }
 
   @Override
@@ -67,8 +71,8 @@ public class Transaction {
         + quantity
         + ", price="
         + price
-        + ", totalAmount="
-        + totalAmount
+        + ", changeInCash="
+        + changeInCash
         + ", commission="
         + commission
         + '}';

@@ -14,9 +14,13 @@ public interface TransactionService {
 
     Transaction saveTransaction(String portfolioName, Transaction transaction) throws StockSymbolNotFoundException;
 
-    int saveTransactions(List<Transaction> transactions);
+    int saveTransactions(String portfolioName, List<Transaction> transactions) throws StockSymbolNotFoundException;
 
     Transaction findTransactionById(Long id);
 
     void deleteTransaction(Long id);
+
+    List<Transaction> findAll();
+
+    void deleteAll();
 }

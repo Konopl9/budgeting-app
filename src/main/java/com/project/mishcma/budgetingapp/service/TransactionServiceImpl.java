@@ -2,8 +2,11 @@ package com.project.mishcma.budgetingapp.service;
 
 import com.project.mishcma.budgetingapp.entity.Portfolio;
 import com.project.mishcma.budgetingapp.entity.Transaction;
+import com.project.mishcma.budgetingapp.entity.TransactionType;
 import com.project.mishcma.budgetingapp.exception.StockSymbolNotFoundException;
 import com.project.mishcma.budgetingapp.repository.TransactionRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +19,8 @@ import java.util.Optional;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
+
+    private final Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
     private final TransactionRepository transactionRepository;
 
@@ -54,12 +59,25 @@ public class TransactionServiceImpl implements TransactionService {
         if (transaction.getDate() == null) {
             transaction.setDate(Date.from(Instant.now()));
         }
-        transaction.setTotalAmount(transaction.getQuantity()*transaction.getPrice());
+        double changeInCash;
+        if (transaction.getType() == TransactionType.SELL) {
+            changeInCash = transaction.getQuantity() * transaction.getPrice() - transaction.getCommission();
+        } else {
+            changeInCash = -(transaction.getQuantity() * transaction.getPrice() + transaction.getCommission());
+        }
+        transaction.setChangeInCash(changeInCash);
         return transactionRepository.save(transaction);
     }
 
     @Override
-    public int saveTransactions(List<Transaction> transactions) {
+    public int saveTransactions(String portfolioName, List<Transaction> transactions) {
+        transactions.forEach(transaction -> {
+            try {
+                saveTransaction(portfolioName, transaction);
+            } catch (StockSymbolNotFoundException e) {
+                logger.error("Unable to save transaction {}", e.getMessage());
+            }
+        });
         return transactionRepository.saveAll(transactions).size();
     }
 
@@ -72,6 +90,16 @@ public class TransactionServiceImpl implements TransactionService {
     public void deleteTransaction(Long id) {
         transactionRepository.deleteById(id);
         transactionRepository.findAll().forEach(System.out::println);
+    }
+
+    @Override
+    public List<Transaction> findAll() {
+        return transactionRepository.findAll();
+    }
+
+    @Override
+    public void deleteAll() {
+        transactionRepository.deleteAll();
     }
 
     private Transaction unWrapTransaction(Optional<Transaction> wrappedTransaction) {

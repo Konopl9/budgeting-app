@@ -23,7 +23,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         <div class="alert alert-danger alert-dismissible" role="alert" th:if="${error}">
-            <span th:text="${error}"></span>
+            <span th:utext="${error}"></span>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </div>
@@ -77,7 +77,7 @@
                     <td><span th:text="${#dates.format(transaction.date, 'yyyy-MM-dd')}"></span></td>
                     <td><span th:text="${transaction.quantity}"></span></td>
                     <td><span th:text="${transaction.price}"></span></td>
-                    <td><span th:text="${transaction.totalAmount}"></span></td>
+                    <td><span th:text="${transaction.changeInCash}"></span></td>
                     <td><span th:text="${transaction.commission}"></span></td>
                     <td>
                         <div class="btn-group">

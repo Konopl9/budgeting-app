@@ -7,6 +7,12 @@
     <div class="row justify-content-center">
         <div class="col-md-6">
             <h2 class="mb-4">Update Transaction</h2>
+            <div class="row mt-3">
+                <div class="alert alert-danger alert-dismissible" role="alert" th:if="${error}">
+                    <span th:utext="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
             <form method="post" id="transaction-form" th:action="@{/transactions/updateTransaction}" th:object="${transaction}">
                 <input type="hidden" id="id" name="id" th:field="*{id}">
                 <input type="hidden" id="ticker" name="ticker" th:field="*{ticker}">

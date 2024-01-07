@@ -4,6 +4,7 @@ import com.project.mishcma.budgetingapp.entity.Portfolio;
 import com.project.mishcma.budgetingapp.entity.Transaction;
 import com.project.mishcma.budgetingapp.entity.TransactionType;
 import com.project.mishcma.budgetingapp.event.TransactionResetEvent;
+import com.project.mishcma.budgetingapp.exception.StockSymbolNotFoundException;
 import com.project.mishcma.budgetingapp.repository.PortfolioRepository;
 import com.project.mishcma.budgetingapp.repository.TransactionRepository;
 import com.project.mishcma.budgetingapp.service.FileService;
@@ -13,6 +14,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+
+import com.project.mishcma.budgetingapp.service.TransactionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -22,21 +25,21 @@ import org.springframework.stereotype.Component;
 @Component
 public class Initializer {
 
-    private final TransactionRepository transactionRepository;
+    private final TransactionService transactionService;
     private final PortfolioRepository portfolioRepository;
     private final PortfolioService portfolioService;
     private final FileService fileService;
     Logger logger = LoggerFactory.getLogger(Initializer.class);
 
-    public Initializer(TransactionRepository transactionRepository, FileService fileService, PortfolioRepository portfolioRepository, PortfolioService portfolioService) {
-        this.transactionRepository = transactionRepository;
+    public Initializer(TransactionService transactionService, FileService fileService, PortfolioRepository portfolioRepository, PortfolioService portfolioService) {
+        this.transactionService = transactionService;
         this.portfolioRepository = portfolioRepository;
         this.fileService = fileService;
         this.portfolioService = portfolioService;
     }
 
     @EventListener({ApplicationReadyEvent.class, TransactionResetEvent.class})
-    public void reset() {
+    public void reset() throws StockSymbolNotFoundException {
         logger.info("Pre-populated data:");
 
         // Create three portfolios
@@ -48,11 +51,11 @@ public class Initializer {
         portfolioRepository.save(dividendPortfolio);
         portfolioRepository.save(valuePortfolio);
 
-        logger.info("Number of transactions: " + transactionRepository.findAll().size());
+        logger.info("Number of transactions: " + transactionService.findAll().size());
 
         // Check if transactions are already populated in the database
-        if (transactionRepository.count() != 25) {
-            transactionRepository.deleteAll();
+        if (transactionService.findAll().size() != 25) {
+            transactionService.deleteAll();
 
             // Create and save transactions for 7 different stocks in 3 different portfolios
             String[] tickers = {"AAPL", "MSFT", "GOOGL", "AMZN", "NFLX", "TSLA", "V"};
@@ -73,13 +76,12 @@ public class Initializer {
                             0.35d
                     );
 
-                    transaction.setPortfolio(portfolio);
-                    transactionRepository.save(transaction);
+                    transactionService.saveTransaction(portfolio.getName(), transaction);
                 }
         }
 
         // Print all data from the Transaction table
-        List<Transaction> allTransactions = transactionRepository.findAll();
+        List<Transaction> allTransactions = transactionService.findAll();
         logger.info("Data from Transaction table:");
         for (Transaction transaction : allTransactions) {
             logger.info(transaction.toString());

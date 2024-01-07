@@ -45,9 +45,7 @@ public class PortfolioController {
 
   @PostMapping("/updateCash")
   private String updateCash(
-      @Valid @ModelAttribute("cashForm") Portfolio newPortfolio,
-      BindingResult bindingResult,
-      Model model) {
+      @Valid @ModelAttribute Portfolio newPortfolio, BindingResult bindingResult, Model model) {
     if (bindingResult.hasErrors()) {
       model.addAttribute("error", "Unable to update cash position with negative value");
       return showPortfolioPage(newPortfolio.getName(), model);
