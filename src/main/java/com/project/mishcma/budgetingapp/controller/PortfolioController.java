@@ -1,7 +1,6 @@
 package com.project.mishcma.budgetingapp.controller;
 
 import com.project.mishcma.budgetingapp.entity.Portfolio;
-import com.project.mishcma.budgetingapp.entity.Transaction;
 import com.project.mishcma.budgetingapp.service.PortfolioService;
 import com.project.mishcma.budgetingapp.service.TransactionService;
 import jakarta.validation.Valid;
@@ -23,8 +22,8 @@ public class PortfolioController {
   private final TransactionService transactionService;
 
   @GetMapping
-  public String showAllForm() {
-    return redirectToFirstPortfolio();
+  public String showAllForm(@ModelAttribute("newPortfolio") Portfolio newPortfolio, Model model) {
+    return redirectToFirstPortfolioOrEmpty(newPortfolio, model);
   }
 
   @GetMapping("/{name}")
@@ -33,7 +32,15 @@ public class PortfolioController {
   }
 
   @PostMapping("/add")
-  public String addPortfolio(@ModelAttribute Portfolio newPortfolio, Model model) {
+  public String addPortfolio(
+      @ModelAttribute("newPortfolio") @Valid Portfolio newPortfolio,
+      BindingResult bindingResult,
+      Model model) {
+    if (bindingResult.hasErrors()) {
+      model.addAttribute("error", "Unable to add portfolio. Please check your inputs.");
+      return showPortfolioPage(newPortfolio.getName(), model);
+    }
+
     if (portfolioService.isPortfolioNameExists(newPortfolio.getName())) {
       model.addAttribute("error", "Portfolio name already exists");
       return showPortfolioPage(portfolioService.getPortfoliosNames().get(0), model);
@@ -44,8 +51,10 @@ public class PortfolioController {
   }
 
   @PostMapping("/updateCash")
-  private String updateCash(
-      @Valid @ModelAttribute Portfolio newPortfolio, BindingResult bindingResult, Model model) {
+  public String updateCash(
+      @Valid @ModelAttribute("newPortfolio") Portfolio newPortfolio,
+      BindingResult bindingResult,
+      Model model) {
     if (bindingResult.hasErrors()) {
       model.addAttribute("error", "Unable to update cash position with negative value");
       return showPortfolioPage(newPortfolio.getName(), model);
@@ -60,12 +69,16 @@ public class PortfolioController {
   @GetMapping("/delete/{name}")
   public String deletePortfolio(@PathVariable String name) {
     portfolioService.deletePortfolioById(name);
-    return redirectToFirstPortfolio();
+    return "redirect:/portfolios";
   }
 
-  private String redirectToFirstPortfolio() {
-    List<String> portfolioName = portfolioService.getPortfoliosNames();
-    return "redirect:/portfolios/" + portfolioName.get(0);
+  private String redirectToFirstPortfolioOrEmpty(Portfolio newPortfolio, Model model) {
+    List<String> portfolioNames = portfolioService.getPortfoliosNames();
+    if (portfolioNames.isEmpty()) {
+      model.addAttribute("newPortfolio", newPortfolio);
+      return "empty-portfolio";
+    }
+    return "redirect:/portfolios/" + portfolioNames.get(0);
   }
 
   private String showPortfolioPage(String name, Model model) {
@@ -76,12 +89,9 @@ public class PortfolioController {
     Portfolio portfolio = portfolioService.generatePortfolioPositionsByName(name);
     model.addAttribute("portfolio", portfolio);
     Map<String, Double> allocationMap = portfolioService.getPortfolioAllocation(portfolio);
-    List<String> allocationLabels = new ArrayList<>(allocationMap.keySet());
-    List<Double> allocationData = new ArrayList<>(allocationMap.values());
-    model.addAttribute("allocationLabels", allocationLabels);
-    model.addAttribute("allocationData", allocationData);
-    List<Transaction> transactions = transactionService.getFiveTransactions(portfolio);
-    model.addAttribute("transactions", transactions);
+    model.addAttribute("allocationLabels", new ArrayList<>(allocationMap.keySet()));
+    model.addAttribute("allocationData", new ArrayList<>(allocationMap.values()));
+    model.addAttribute("transactions", transactionService.getFiveTransactions(portfolio));
     return "portfolios";
   }
 }
