@@ -38,7 +38,7 @@
                     <th>Date</th>
                     <th>Shares</th>
                     <th>Price</th>
-                    <th>Total amount</th>
+                    <th>Cash change</th>
                     <th style="width: 80px;">Commission</th>
                     <th>Actions</th>
                 </tr>
@@ -77,7 +77,7 @@
                     <td><span th:text="${#dates.format(transaction.date, 'yyyy-MM-dd')}"></span></td>
                     <td><span th:text="${transaction.quantity}"></span></td>
                     <td><span th:text="${transaction.price}"></span></td>
-                    <td><span th:text="${transaction.changeInCash}"></span></td>
+                    <td><span th:text="${transaction.changeInCash} + '$'"></span></td>
                     <td><span th:text="${transaction.commission}"></span></td>
                     <td>
                         <div class="btn-group">
