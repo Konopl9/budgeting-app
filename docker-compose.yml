@@ -1,11 +1,56 @@
 version: '3.8'
 
 services:
-  db:
-      image: postgres:alpine
-      ports:
-        - "5432:5432"
-      environment:
-        POSTGRES_DB: budgeting-app
-        POSTGRES_PASSWORD: mysuperpassword
+  market-data-server-postgres:
+    container_name: market-data-server-postgres
+    image: postgres:alpine
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: market-data-db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 
+  budgeting-app-postgres:
+    container_name: budgeting-app-postgres
+    image: postgres:alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: budgeting-app-db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+  market-data-service-server:
+    build:
+      context: ../market-data-service
+      dockerfile: Dockerfile
+    container_name: market-data-server
+    ports:
+      - "8081:8081"
+      - "5005:5005"
+    depends_on:
+      - market-data-server-postgres
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      FINNHUB_API_KEY: ${FINNHUB_API_KEY}
+      SERVER_PORT: "8081"
+
+  budgeting-app-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: budgeting-app-server
+    ports:
+      - "8080:8080"
+      - "5004:5004"
+    depends_on:
+      - budgeting-app-postgres
+      - market-data-service-server
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      SERVER_PORT: "8080"

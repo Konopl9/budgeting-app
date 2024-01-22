@@ -8,7 +8,7 @@ public enum Endpoint {
   PORTFOLIO("/portfolio"),
   PROFILE("/profile");
 
-  private static final String BASE_URL = "http://localhost:8081/api";
+  private static final String BASE_URL = "http://market-data-service-server:8081/api";
 
   private final URI url;
 
