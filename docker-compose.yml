@@ -22,10 +22,10 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 
   market-data-service-server:
+    container_name: market-data-server
     build:
       context: ../market-data-service
       dockerfile: Dockerfile
-    container_name: market-data-server
     ports:
       - "8081:8081"
       - "5005:5005"
@@ -39,10 +39,10 @@ services:
       SERVER_PORT: "8081"
 
   budgeting-app-server:
+    container_name: budgeting-app-server
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: budgeting-app-server
     ports:
       - "8080:8080"
       - "5004:5004"
@@ -54,3 +54,4 @@ services:
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
       SERVER_PORT: "8080"
+    command: ["/opt/wait-for-it.sh", "-t", "35", "market-data-service-server:8081", "--", "java", "-jar", "budgeting-app.jar"]

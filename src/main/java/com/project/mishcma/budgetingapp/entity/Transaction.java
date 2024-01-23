@@ -37,6 +37,8 @@ public class Transaction {
 
   @PositiveOrZero private Double commission;
 
+  private Double unrealizedGainOrLoss;
+
   @ManyToOne
   @JoinColumn(name = "portfolio_name")
   private Portfolio portfolio;

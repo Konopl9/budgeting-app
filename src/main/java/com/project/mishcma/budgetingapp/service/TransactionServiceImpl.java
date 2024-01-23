@@ -49,24 +49,27 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Transaction saveTransaction(String portfolioName, Transaction transaction) throws StockSymbolNotFoundException {
+    public Transaction saveTransaction(String portfolioName, Transaction transactionToSave) throws StockSymbolNotFoundException {
         Portfolio portfolio = portfolioService.findPortfolioByName(portfolioName);
-        transaction.setPortfolio(portfolio);
-        String symbol = transaction.getTicker();
+        transactionToSave.setPortfolio(portfolio);
+        String symbol = transactionToSave.getTicker();
         if(marketDataService.getStockSymbolData(symbol).isEmpty()) {
             throw new StockSymbolNotFoundException("Unable to find a stock symbol {} " + symbol);
         }
-        if (transaction.getDate() == null) {
-            transaction.setDate(Date.from(Instant.now()));
+
+        if (transactionToSave.getDate() == null) {
+            transactionToSave.setDate(Date.from(Instant.now()));
         }
+
         double changeInCash;
-        if (transaction.getType() == TransactionType.SELL) {
-            changeInCash = transaction.getQuantity() * transaction.getPrice() - transaction.getCommission();
+        if (transactionToSave.getType() == TransactionType.SELL) {
+            changeInCash = transactionToSave.getQuantity() * transactionToSave.getPrice() - transactionToSave.getCommission();
         } else {
-            changeInCash = -(transaction.getQuantity() * transaction.getPrice() + transaction.getCommission());
+            changeInCash = -(transactionToSave.getQuantity() * transactionToSave.getPrice() + transactionToSave.getCommission());
         }
-        transaction.setChangeInCash(changeInCash);
-        return transactionRepository.save(transaction);
+        transactionToSave.setChangeInCash(changeInCash);
+
+        return transactionRepository.save(transactionToSave);
     }
 
     @Override

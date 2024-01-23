@@ -40,10 +40,12 @@ public class TransactionController {
   }
 
   @GetMapping("/showUpdateForm/{id}")
-  public ModelAndView showUpdateForm(@PathVariable Long id) {
+  public ModelAndView showUpdateForm(
+      @PathVariable Long id, @RequestParam(name = "portfolioName") String portfolioName) {
     ModelAndView mav = new ModelAndView("update-transaction");
     Transaction transaction = transactionService.findTransactionById(id);
     mav.addObject("transaction", transaction);
+    mav.addObject("portfolioName", portfolioName);
     return mav;
   }
 
@@ -83,7 +85,8 @@ public class TransactionController {
     try {
       transactionService.saveTransaction(portfolioName, transaction);
     } catch (StockSymbolNotFoundException e) {
-      attributes.addFlashAttribute("error", "Unable to update stock symbol " + transaction.getTicker());
+      attributes.addFlashAttribute(
+          "error", "Unable to update stock symbol " + transaction.getTicker());
       attributes.addAttribute("portfolioName", portfolioName);
       return rv;
     }
@@ -101,7 +104,12 @@ public class TransactionController {
   }
 
   @PostMapping("/updateTransaction")
-  public String updateTransaction(String portfolioName, @Valid Transaction transaction, BindingResult bindingResult, Model model) {
+  public String updateTransaction(
+      @ModelAttribute @Valid Transaction transaction,
+      @RequestParam String portfolioName,
+      BindingResult bindingResult,
+      Model model,
+      RedirectAttributes attributes) {
     if (bindingResult.hasErrors()) {
       model.addAttribute(
           "error",
@@ -125,15 +133,18 @@ public class TransactionController {
                   })
               .collect(Collectors.joining("<br>")));
       model.addAttribute("transaction", transaction);
+      model.addAttribute("portfolioName", portfolioName);
       return "update-transaction";
-      }
+    }
     try {
       transactionService.saveTransaction(portfolioName, transaction);
     } catch (StockSymbolNotFoundException e) {
       model.addAttribute("error", "Unable to update stock symbol " + transaction.getTicker());
       model.addAttribute("transaction", transaction);
+      model.addAttribute("portfolioName", portfolioName);
       return "update-transaction";
     }
+    attributes.addAttribute("portfolioName", portfolioName);
     return "redirect:/transactions/showAll";
   }
 

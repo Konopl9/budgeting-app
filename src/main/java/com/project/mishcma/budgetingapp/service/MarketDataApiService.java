@@ -7,7 +7,8 @@ import com.project.mishcma.budgetingapp.DTO.QuoteDTO;
 import com.project.mishcma.budgetingapp.DTO.StockDataDTO;
 import com.project.mishcma.budgetingapp.DTO.StringList;
 import com.project.mishcma.budgetingapp.DTO.SymbolDTO;
-import com.project.mishcma.budgetingapp.config.Endpoint;
+import com.project.mishcma.budgetingapp.config.ApiUrlBuilder;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -34,13 +35,16 @@ public class MarketDataApiService implements MarketDataService {
 
   private final RestTemplate restTemplate;
 
-  public MarketDataApiService(RestTemplate restTemplate) {
+  private final ApiUrlBuilder apiUrlBuilder;
+
+
+  public MarketDataApiService(RestTemplate restTemplate, ApiUrlBuilder apiUrlBuilder) {
     this.restTemplate = restTemplate;
+    this.apiUrlBuilder = apiUrlBuilder;
   }
 
   public Optional<SymbolDTO> getStockSymbolData(String symbol) throws StockSymbolNotFoundException {
-    String url =
-        UriComponentsBuilder.fromUri(Endpoint.SYMBOL.url()).pathSegment(symbol).build().toString();
+    String url = UriComponentsBuilder.fromUriString(apiUrlBuilder.buildSymbolUrlWithSegment(symbol)).build().toString();
 
     ResponseEntity<String> jsonResponse = restTemplate.getForEntity(url, String.class);
 
@@ -76,7 +80,7 @@ public class MarketDataApiService implements MarketDataService {
     headers.setContentType(MediaType.APPLICATION_JSON);
     HttpEntity<StringList> requestEntity = new HttpEntity<>(new StringList(symbols), headers);
 
-    String url = UriComponentsBuilder.fromUri(Endpoint.SYMBOL.url()).build().toString();
+    String url = UriComponentsBuilder.fromUriString(apiUrlBuilder.buildSymbolUrl()).build().toString();
 
     ResponseEntity<String> jsonResponse =
         restTemplate.postForEntity(url, requestEntity, String.class);
@@ -110,8 +114,7 @@ public class MarketDataApiService implements MarketDataService {
   }
 
   public Optional<QuoteDTO> getStockQuoteData(String symbol) {
-    String url =
-        UriComponentsBuilder.fromUri(Endpoint.QUOTE.url()).query(symbol).build().toString();
+    String url = UriComponentsBuilder.fromUriString(apiUrlBuilder.buildQuoteUrlWithId(symbol)).build().toString();
 
     ResponseEntity<String> jsonResponse = restTemplate.getForEntity(url, String.class);
 
@@ -149,10 +152,7 @@ public class MarketDataApiService implements MarketDataService {
         new HttpEntity<>(new StringList(symbols.stream().toList()), headers);
 
     String url =
-        UriComponentsBuilder.fromUri(Endpoint.PORTFOLIO.url())
-            .pathSegment("findStockPrices")
-            .build()
-            .toString();
+        UriComponentsBuilder.fromUriString(apiUrlBuilder.buildPortfolioUrlWithSegment("findStockPrices")).build().toString();
 
     ResponseEntity<String> jsonResponse =
         restTemplate.postForEntity(url, requestEntity, String.class);
