@@ -1,8 +1,11 @@
 package com.project.mishcma.budgetingapp.service;
 
-import com.project.mishcma.budgetingapp.DTO.StockDataDTO;
+import com.project.mishcma.budgetingapp.RestDTO.StockDataDTO;
+import com.project.mishcma.budgetingapp.dto.PortfolioDTO;
+import com.project.mishcma.budgetingapp.dto.TransactionDTO;
 import com.project.mishcma.budgetingapp.entity.*;
 import com.project.mishcma.budgetingapp.exception.StockDataNotFoundException;
+import com.project.mishcma.budgetingapp.model.Position;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -23,21 +26,21 @@ public class PositionServiceImpl implements PositionService {
     }
 
     @Override
-    public List<Position> createPositionsFromTransactions(Portfolio portfolio) {
-        List<Transaction> transactions = portfolio.getTransactions();
+    public List<Position> createPositionsFromTransactions(PortfolioDTO portfolioDTO) {
+        List<TransactionDTO> transactions = portfolioDTO.getTransactions();
         if (transactions.isEmpty()) {
             return new ArrayList<>();
         }
         // Sort transactions by date to preserve the order
-        transactions.sort(Comparator.comparing(Transaction::getDate));
+        transactions.sort(Comparator.comparing(TransactionDTO::getDate));
 
-        Map<String, List<Transaction>> tickerToTransactionMap = new HashMap<>();
+        Map<String, List<TransactionDTO>> tickerToTransactionMap = new HashMap<>();
         List<Position> calculatedPositions = new ArrayList<>();
 
         // Populate the map
-        for (Transaction transaction : transactions) {
+        for (TransactionDTO transaction : transactions) {
             String ticker = transaction.getTicker();
-            List<Transaction> tickerSpecificTransactions = tickerToTransactionMap.computeIfAbsent(ticker, k -> new ArrayList<>());
+            List<TransactionDTO> tickerSpecificTransactions = tickerToTransactionMap.computeIfAbsent(ticker, k -> new ArrayList<>());
             tickerSpecificTransactions.add(transaction);
         }
 
@@ -49,9 +52,9 @@ public class PositionServiceImpl implements PositionService {
                 List<StockDataDTO> stockData = stockDataOptional.get();
 
                 // Create positions
-                for (Map.Entry<String, List<Transaction>> entry : tickerToTransactionMap.entrySet()) {
+                for (Map.Entry<String, List<TransactionDTO>> entry : tickerToTransactionMap.entrySet()) {
                     String ticker = entry.getKey();
-                    List<Transaction> transactionsForTicker = entry.getValue();
+                    List<TransactionDTO> transactionsForTicker = entry.getValue();
 
                     // Find the StockDataDTO for the current ticker
                     Optional<StockDataDTO> stockDataForTicker = stockData.stream()
@@ -63,7 +66,7 @@ public class PositionServiceImpl implements PositionService {
                         position.setStockDataDTO(stockDataForTicker.get());
                         position.setCurrentPositionValue(stockDataForTicker.get().getCurrentPrice() * position.getQuantity());
                         position.setTransactions(transactionsForTicker);
-                        position.setPortfolio(portfolio);
+                        position.setPortfolio(portfolioDTO);
                         calculatedPositions.add(position);
                     } else {
                         logger.warn("Stock data not available for ticker: " + ticker);
@@ -81,7 +84,7 @@ public class PositionServiceImpl implements PositionService {
         return calculatedPositions;
     }
 
-    private Position getPosition(Map.Entry<String, List<Transaction>> entry) {
+    private Position getPosition(Map.Entry<String, List<TransactionDTO>> entry) {
 
         if (entry.getValue() == null) {
             throw new IllegalArgumentException("Transaction list cannot be null");
@@ -91,7 +94,7 @@ public class PositionServiceImpl implements PositionService {
         double totalBuyCost = ZERO;
         double totalSellCost = ZERO;
 
-        for (Transaction transaction : entry.getValue()) {
+        for (TransactionDTO transaction : entry.getValue()) {
             double transactionCost = transaction.getQuantity() * transaction.getPrice() + transaction.getCommission();
             // Calculate quantity and cost
             if (transaction.getType().equals(TransactionType.BUY)) {

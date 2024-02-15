@@ -1,5 +1,6 @@
 package com.project.mishcma.budgetingapp.service;
 
+import com.project.mishcma.budgetingapp.dto.PortfolioDTO;
 import com.project.mishcma.budgetingapp.entity.Portfolio;
 import java.util.List;
 import java.util.Map;
@@ -10,17 +11,15 @@ public interface PortfolioService {
 
   Portfolio findPortfolioByName(String name);
 
-  Portfolio generatePortfolioPositionsByName(String name);
+  PortfolioDTO generatePortfolioPositionsByName(String name);
 
   void deletePortfolioById(String name);
 
-  void setCostOfInvestment(Portfolio portfolio);
-
-  void setTotalCost(Portfolio portfolio);
-
-  Map<String, Double> getPortfolioAllocation(Portfolio portfolio);
+  Map<String, Double> getPortfolioAllocation(PortfolioDTO portfolioDTO);
 
   boolean isPortfolioNameExists(String portfolioName);
 
-  Portfolio save(Portfolio portfolio);
+  PortfolioDTO save(PortfolioDTO portfolioDTO);
+
+  void updateCashBalance(PortfolioDTO portfolioDTO);
 }

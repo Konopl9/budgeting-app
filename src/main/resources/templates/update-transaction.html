@@ -16,6 +16,7 @@
             <form method="post" id="transaction-form" th:action="@{/transactions/updateTransaction}" th:object="${transaction}">
                 <input type="hidden" id="id" name="id" th:field="*{id}">
                 <input type="hidden" id="ticker" name="ticker" th:field="*{ticker}">
+                <input type="hidden" id="portfolioName" name="portfolioName" th:value="${portfolioName}">
                 <div class="mb-3">
                     <label for="type" class="form-label">Ticker:</label>
                     <label type="text" th:text="*{ticker}"></label>

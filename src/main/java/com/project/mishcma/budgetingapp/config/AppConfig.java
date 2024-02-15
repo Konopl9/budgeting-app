@@ -1,6 +1,7 @@
 package com.project.mishcma.budgetingapp.config;
 
 import com.project.mishcma.budgetingapp.exception.RestTemplateResponseErrorHandler;
+import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
@@ -13,5 +14,10 @@ public class AppConfig {
     RestTemplate restTemplate = new RestTemplate();
     restTemplate.setErrorHandler(new RestTemplateResponseErrorHandler());
     return restTemplate;
+  }
+
+  @Bean
+  public ModelMapper modelMapper() {
+    return new ModelMapper();
   }
 }

@@ -1,4 +1,4 @@
-package com.project.mishcma.budgetingapp.DTO;
+package com.project.mishcma.budgetingapp.RestDTO;
 
 public class StockDataDTO {
 	private String symbol;

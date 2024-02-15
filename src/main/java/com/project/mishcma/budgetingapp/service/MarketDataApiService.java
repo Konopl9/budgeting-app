@@ -1,19 +1,20 @@
 package com.project.mishcma.budgetingapp.service;
 
+import static com.project.mishcma.budgetingapp.helper.StringUtils.extractErrorMessage;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.mishcma.budgetingapp.DTO.QuoteDTO;
-import com.project.mishcma.budgetingapp.DTO.StockDataDTO;
-import com.project.mishcma.budgetingapp.DTO.StringList;
-import com.project.mishcma.budgetingapp.DTO.SymbolDTO;
+import com.project.mishcma.budgetingapp.RestDTO.QuoteDTO;
+import com.project.mishcma.budgetingapp.RestDTO.StockDataDTO;
+import com.project.mishcma.budgetingapp.RestDTO.StringList;
+import com.project.mishcma.budgetingapp.RestDTO.SymbolDTO;
 import com.project.mishcma.budgetingapp.config.Endpoint;
+import com.project.mishcma.budgetingapp.exception.StockDataNotFoundException;
+import com.project.mishcma.budgetingapp.exception.StockSymbolNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
-import com.project.mishcma.budgetingapp.exception.StockDataNotFoundException;
-import com.project.mishcma.budgetingapp.exception.StockSymbolNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -24,8 +25,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import static com.project.mishcma.budgetingapp.helper.StringUtils.extractErrorMessage;
 
 @Service
 public class MarketDataApiService implements MarketDataService {

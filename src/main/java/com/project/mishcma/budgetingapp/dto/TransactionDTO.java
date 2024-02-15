@@ -1,41 +1,43 @@
-package com.project.mishcma.budgetingapp.entity;
+package com.project.mishcma.budgetingapp.dto;
 
+import com.project.mishcma.budgetingapp.entity.TransactionType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import java.util.Date;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class Transaction {
+public class TransactionDTO {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  private String ticker;
+  @NotEmpty private String ticker;
 
-  @Enumerated(EnumType.STRING)
   private TransactionType type;
 
+  @PastOrPresent
+  @DateTimeFormat(pattern = "yyyy-MM-dd")
   private Date date;
 
-  private Double quantity;
+  @Positive private Double quantity;
 
-  private Double price;
+  @Positive private Double price;
 
   private Double changeInCash;
 
-  private Double commission;
+  @PositiveOrZero private Double commission;
 
-  @ManyToOne
-  @JoinColumn(name = "portfolio_name")
-  private Portfolio portfolio;
+  private Double unrealizedGainOrLoss;
 
-  public Transaction(
+  public TransactionDTO(
       String ticker,
       TransactionType type,
       Date date,
@@ -53,8 +55,10 @@ public class Transaction {
 
   @Override
   public String toString() {
-    return "Transaction{"
-        + "ticker='"
+    return "TransactionDTO{"
+        + "id="
+        + id
+        + ", ticker='"
         + ticker
         + '\''
         + ", type="
@@ -69,6 +73,8 @@ public class Transaction {
         + changeInCash
         + ", commission="
         + commission
+        + ", unrealizedGainOrLoss="
+        + unrealizedGainOrLoss
         + '}';
   }
 }

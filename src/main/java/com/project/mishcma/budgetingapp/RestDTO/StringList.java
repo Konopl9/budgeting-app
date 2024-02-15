@@ -1,4 +1,4 @@
-package com.project.mishcma.budgetingapp.DTO;
+package com.project.mishcma.budgetingapp.RestDTO;
 
 import lombok.Getter;
 

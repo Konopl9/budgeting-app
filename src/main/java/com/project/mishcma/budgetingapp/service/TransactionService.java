@@ -1,26 +1,27 @@
 package com.project.mishcma.budgetingapp.service;
 
-import com.project.mishcma.budgetingapp.entity.Portfolio;
-import com.project.mishcma.budgetingapp.entity.Transaction;
+import com.project.mishcma.budgetingapp.dto.PortfolioDTO;
+import com.project.mishcma.budgetingapp.dto.TransactionDTO;
 import com.project.mishcma.budgetingapp.exception.StockSymbolNotFoundException;
-
 import java.util.List;
 
 public interface TransactionService {
 
-    List<Transaction> getTransactions(String portfolioName);
+  List<TransactionDTO> getTransactions(String portfolioName);
 
-    List<Transaction> getFiveTransactions(Portfolio portfolio);
+  List<TransactionDTO> getFiveTransactions(PortfolioDTO portfolioDTO);
 
-    Transaction saveTransaction(String portfolioName, Transaction transaction) throws StockSymbolNotFoundException;
+  TransactionDTO saveTransaction(String portfolioName, TransactionDTO transaction)
+      throws StockSymbolNotFoundException;
 
-    int saveTransactions(String portfolioName, List<Transaction> transactions) throws StockSymbolNotFoundException;
+  int saveTransactions(String portfolioName, List<TransactionDTO> transactions)
+      throws StockSymbolNotFoundException;
 
-    Transaction findTransactionById(Long id);
+  TransactionDTO findTransactionById(Long id);
 
-    void deleteTransaction(Long id);
+  void deleteTransaction(Long id);
 
-    List<Transaction> findAll();
+  List<TransactionDTO> findAll();
 
-    void deleteAll();
+  void deleteAll();
 }

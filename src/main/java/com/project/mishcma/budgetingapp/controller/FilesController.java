@@ -20,9 +20,10 @@ public class FilesController {
   }
 
   @GetMapping
-  public String showFilesPage(@RequestParam(name = "portfolioName") String portfolioName, Model model) {
+  public String showFilesPage(
+      @RequestParam(name = "portfolioName") String portfolioName, Model model) {
     model.addAttribute("fileNames", fileService.getFileNames());
-    model.addAttribute("selectedPortfolio", portfolioName);
+    model.addAttribute("portfolioName", portfolioName);
     return "files";
   }
 
@@ -34,7 +35,10 @@ public class FilesController {
   }
 
   @PostMapping(value = "/{fileName}")
-  public String processFile(@RequestParam(name = "portfolioName") String portfolioName, @PathVariable String fileName, Model model) {
+  public String processFile(
+      @RequestParam(name = "portfolioName") String portfolioName,
+      @PathVariable String fileName,
+      Model model) {
     try {
       Integer addedRows = fileService.processCsvFile(fileName, portfolioName);
       model.addAttribute("success", String.format("Transactions added: %d", addedRows));

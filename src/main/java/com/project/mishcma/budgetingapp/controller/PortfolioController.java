@@ -1,5 +1,6 @@
 package com.project.mishcma.budgetingapp.controller;
 
+import com.project.mishcma.budgetingapp.dto.PortfolioDTO;
 import com.project.mishcma.budgetingapp.entity.Portfolio;
 import com.project.mishcma.budgetingapp.service.PortfolioService;
 import com.project.mishcma.budgetingapp.service.TransactionService;
@@ -33,7 +34,7 @@ public class PortfolioController {
 
   @PostMapping("/add")
   public String addPortfolio(
-      @ModelAttribute("newPortfolio") @Valid Portfolio newPortfolio,
+      @ModelAttribute("newPortfolio") @Valid PortfolioDTO newPortfolio,
       BindingResult bindingResult,
       Model model) {
     if (bindingResult.hasErrors()) {
@@ -46,13 +47,13 @@ public class PortfolioController {
       return showPortfolioPage(portfolioService.getPortfoliosNames().get(0), model);
     }
 
-    Portfolio addedPortfolio = portfolioService.save(newPortfolio);
+    PortfolioDTO addedPortfolio = portfolioService.save(newPortfolio);
     return "redirect:/portfolios/" + addedPortfolio.getName();
   }
 
   @PostMapping("/updateCash")
   public String updateCash(
-      @Valid @ModelAttribute("newPortfolio") Portfolio newPortfolio,
+      @Valid @ModelAttribute("newPortfolio") PortfolioDTO newPortfolio,
       BindingResult bindingResult,
       Model model) {
     if (bindingResult.hasErrors()) {
@@ -60,10 +61,9 @@ public class PortfolioController {
       return showPortfolioPage(newPortfolio.getName(), model);
     }
 
-    Portfolio portfolioToUpdate = portfolioService.findPortfolioByName(newPortfolio.getName());
-    portfolioToUpdate.setCashBalance(newPortfolio.getCashBalance());
-    portfolioService.save(portfolioToUpdate);
-    return "redirect:/portfolios/" + portfolioToUpdate.getName();
+    portfolioService.updateCashBalance(newPortfolio);
+    Portfolio updatedPortfolio = portfolioService.findPortfolioByName(newPortfolio.getName());
+    return "redirect:/portfolios/" + updatedPortfolio.getName();
   }
 
   @GetMapping("/delete/{name}")
@@ -84,9 +84,9 @@ public class PortfolioController {
   private String showPortfolioPage(String name, Model model) {
     List<String> portfolioName = portfolioService.getPortfoliosNames();
     model.addAttribute("portfolioNames", portfolioName);
-    model.addAttribute("selectedPortfolio", name);
+    model.addAttribute("portfolioName", name);
     model.addAttribute("newPortfolio", new Portfolio());
-    Portfolio portfolio = portfolioService.generatePortfolioPositionsByName(name);
+    PortfolioDTO portfolio = portfolioService.generatePortfolioPositionsByName(name);
     model.addAttribute("portfolio", portfolio);
     Map<String, Double> allocationMap = portfolioService.getPortfolioAllocation(portfolio);
     model.addAttribute("allocationLabels", new ArrayList<>(allocationMap.keySet()));

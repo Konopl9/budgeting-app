@@ -1,6 +1,8 @@
-package com.project.mishcma.budgetingapp.entity;
+package com.project.mishcma.budgetingapp.model;
 
-import com.project.mishcma.budgetingapp.DTO.StockDataDTO;
+import com.project.mishcma.budgetingapp.RestDTO.StockDataDTO;
+import com.project.mishcma.budgetingapp.dto.PortfolioDTO;
+import com.project.mishcma.budgetingapp.dto.TransactionDTO;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,11 +23,11 @@ public class Position implements Cloneable {
 
   private Double currentPositionValue;
 
-  private Portfolio portfolio;
+  private PortfolioDTO portfolio;
 
   private Double percentOfPortfolio;
 
-  private List<Transaction> transactions;
+  private List<TransactionDTO> transactions;
 
   public Position(String ticker, Double quantity, Double averagePrice) {
     this.ticker = ticker;

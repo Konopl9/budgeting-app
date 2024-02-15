@@ -1,6 +1,6 @@
 package com.project.mishcma.budgetingapp.controller;
 
-import com.project.mishcma.budgetingapp.entity.Transaction;
+import com.project.mishcma.budgetingapp.dto.TransactionDTO;
 import com.project.mishcma.budgetingapp.event.TransactionResetEvent;
 import com.project.mishcma.budgetingapp.exception.StockSymbolNotFoundException;
 import com.project.mishcma.budgetingapp.service.TransactionService;
@@ -35,21 +35,22 @@ public class TransactionController {
   public String showAllForm(
       @RequestParam(name = "portfolioName") String portfolioName, Model model) {
     model.addAttribute("transactions", transactionService.getTransactions(portfolioName));
-    model.addAttribute("selectedPortfolio", portfolioName);
+    model.addAttribute("portfolioName", portfolioName);
     return "transactions";
   }
 
   @GetMapping("/showUpdateForm/{id}")
-  public ModelAndView showUpdateForm(@PathVariable Long id) {
+  public ModelAndView showUpdateForm(@PathVariable Long id, @RequestParam String portfolioName) {
     ModelAndView mav = new ModelAndView("update-transaction");
-    Transaction transaction = transactionService.findTransactionById(id);
+    TransactionDTO transaction = transactionService.findTransactionById(id);
     mav.addObject("transaction", transaction);
+    mav.addObject("portfolioName", portfolioName);
     return mav;
   }
 
   @PostMapping("/createTransaction")
   public RedirectView createTransaction(
-      @Valid @ModelAttribute Transaction transaction,
+      @Valid @ModelAttribute TransactionDTO transaction,
       BindingResult bindingResult,
       @RequestParam(name = "portfolioName") String portfolioName,
       RedirectAttributes attributes) {
@@ -83,7 +84,8 @@ public class TransactionController {
     try {
       transactionService.saveTransaction(portfolioName, transaction);
     } catch (StockSymbolNotFoundException e) {
-      attributes.addFlashAttribute("error", "Unable to update stock symbol " + transaction.getTicker());
+      attributes.addFlashAttribute(
+          "error", "Unable to update stock symbol " + transaction.getTicker());
       attributes.addAttribute("portfolioName", portfolioName);
       return rv;
     }
@@ -101,7 +103,12 @@ public class TransactionController {
   }
 
   @PostMapping("/updateTransaction")
-  public String updateTransaction(String portfolioName, @Valid Transaction transaction, BindingResult bindingResult, Model model) {
+  public String updateTransaction(
+      @RequestParam String portfolioName,
+      @Valid TransactionDTO transaction,
+      BindingResult bindingResult,
+      Model model,
+      RedirectAttributes redirectAttributes) {
     if (bindingResult.hasErrors()) {
       model.addAttribute(
           "error",
@@ -125,15 +132,18 @@ public class TransactionController {
                   })
               .collect(Collectors.joining("<br>")));
       model.addAttribute("transaction", transaction);
+      model.addAttribute("portfolioName", portfolioName);
       return "update-transaction";
-      }
+    }
     try {
       transactionService.saveTransaction(portfolioName, transaction);
     } catch (StockSymbolNotFoundException e) {
       model.addAttribute("error", "Unable to update stock symbol " + transaction.getTicker());
       model.addAttribute("transaction", transaction);
+      model.addAttribute("portfolioName", portfolioName);
       return "update-transaction";
     }
+    redirectAttributes.addAttribute("portfolioName", portfolioName);
     return "redirect:/transactions/showAll";
   }
 
