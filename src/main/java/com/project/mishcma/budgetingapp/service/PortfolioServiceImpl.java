@@ -56,9 +56,9 @@ public class PortfolioServiceImpl implements PortfolioService {
               .mapToDouble(
                   position -> position.getQuantity() * position.getStockDataDTO().getCurrentPrice())
               .sum();
-      totalCosts += portfolio.getCashBalance();
     }
 
+    totalCosts += portfolio.getCashBalance();
     portfolio.setTotalCost(totalCosts);
   }
 

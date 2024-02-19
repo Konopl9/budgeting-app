@@ -14,7 +14,8 @@ import lombok.Setter;
 public class Transaction {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "transaction_id_seq")
+  @SequenceGenerator(name = "transaction_id_seq", sequenceName = "transaction_id_seq", allocationSize = 1)
   private Long id;
 
   private String ticker;
