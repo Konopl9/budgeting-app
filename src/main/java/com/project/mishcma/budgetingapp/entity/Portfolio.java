@@ -11,11 +11,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@Table(name = "portfolios")
 public class Portfolio {
 
   @Id private String name;
 
-  @PositiveOrZero private Double cashBalance;
+  private Double cashBalance;
 
   @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL)
   private List<Transaction> transactions;

@@ -45,7 +45,7 @@ public class TransactionServiceImpl implements TransactionService {
   public List<TransactionDTO> getTransactions(String portfolioName) {
     Pageable pageable = Pageable.unpaged();
     Page<Transaction> transactionPage =
-        transactionRepository.findByPortfolioOrderByDateDesc(
+        transactionRepository.findByPortfolioOrderByPurchaseDateDesc(
             new Portfolio(portfolioName), pageable);
 
     return transactionPage.getContent().stream()
@@ -57,7 +57,7 @@ public class TransactionServiceImpl implements TransactionService {
   public List<TransactionDTO> getFiveTransactions(PortfolioDTO portfolio) {
     Pageable pageable = PageRequest.of(0, 5);
     Page<Transaction> transactionPage =
-        transactionRepository.findByPortfolioOrderByDateDesc(
+        transactionRepository.findByPortfolioOrderByPurchaseDateDesc(
             PortfolioMapper.toEntity(portfolio), pageable);
     return transactionPage.stream().map(TransactionMapper::toDTO).toList();
   }
@@ -73,8 +73,8 @@ public class TransactionServiceImpl implements TransactionService {
       throw new StockSymbolNotFoundException("Unable to find a stock symbol {} " + symbol);
     }
 
-    if (transactionToSave.getDate() == null) {
-      transactionToSave.setDate(Date.from(Instant.now()));
+    if (transactionToSave.getPurchaseDate() == null) {
+      transactionToSave.setPurchaseDate(Date.from(Instant.now()));
     }
 
     double changeInCash;

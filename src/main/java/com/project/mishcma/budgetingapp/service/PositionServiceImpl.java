@@ -32,7 +32,7 @@ public class PositionServiceImpl implements PositionService {
             return new ArrayList<>();
         }
         // Sort transactions by date to preserve the order
-        transactions.sort(Comparator.comparing(TransactionDTO::getDate));
+        transactions.sort(Comparator.comparing(TransactionDTO::getPurchaseDate));
 
         Map<String, List<TransactionDTO>> tickerToTransactionMap = new HashMap<>();
         List<Position> calculatedPositions = new ArrayList<>();

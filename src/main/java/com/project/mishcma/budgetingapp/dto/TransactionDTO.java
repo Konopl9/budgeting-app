@@ -1,7 +1,6 @@
 package com.project.mishcma.budgetingapp.dto;
 
 import com.project.mishcma.budgetingapp.entity.TransactionType;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
@@ -25,7 +24,7 @@ public class TransactionDTO {
 
   @PastOrPresent
   @DateTimeFormat(pattern = "yyyy-MM-dd")
-  private Date date;
+  private Date purchaseDate;
 
   @Positive private Double quantity;
 
@@ -40,13 +39,13 @@ public class TransactionDTO {
   public TransactionDTO(
       String ticker,
       TransactionType type,
-      Date date,
+      Date purchaseDate,
       Double quantity,
       Double price,
       Double commission) {
     this.ticker = ticker;
     this.type = type;
-    this.date = date;
+    this.purchaseDate = purchaseDate;
     this.quantity = quantity;
     this.price = price;
     this.commission = commission;
@@ -63,8 +62,8 @@ public class TransactionDTO {
         + '\''
         + ", type="
         + type
-        + ", date="
-        + date
+        + ", purchaseDate="
+        + purchaseDate
         + ", quantity="
         + quantity
         + ", price="

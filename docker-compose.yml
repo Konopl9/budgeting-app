@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  budgeting-app-db:
+    container_name: budgeting-app-db-container
+    image: postgres:alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}

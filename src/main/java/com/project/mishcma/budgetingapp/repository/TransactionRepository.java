@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
-  Page<Transaction> findByPortfolioOrderByDateDesc(Portfolio portfolio, Pageable pageable);
+  Page<Transaction> findByPortfolioOrderByPurchaseDateDesc(Portfolio portfolio, Pageable pageable);
 
-  List<Transaction> findByTypeOrderByDateDesc(TransactionType type);
+  List<Transaction> findByTypeOrderByPurchaseDateDesc(TransactionType type);
 }

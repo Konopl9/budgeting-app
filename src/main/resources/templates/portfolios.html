@@ -255,7 +255,7 @@
                     <td><span th:text="${transaction.id}"></span></td>
                     <td><span th:text="${transaction.ticker}"></span></td>
                     <td><span th:text="${transaction.type}"></span></td>
-                    <td><span th:text="${#dates.format(transaction.date, 'yyyy-MM-dd')}"></span></td>
+                    <td><span th:text="${#dates.format(transaction.purchaseDate, 'yyyy-MM-dd')}"></span></td>
                     <td><span th:text="${transaction.quantity}"></span></td>
                     <td><span th:text="${transaction.price}"></span></td>
                     <td><span th:text="${#numbers.formatDecimal(transaction.changeInCash, 1, 2)}"></span></td>

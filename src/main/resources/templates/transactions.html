@@ -38,7 +38,7 @@
                     <th>Date</th>
                     <th>Shares</th>
                     <th>Price</th>
-                    <th>Total amount</th>
+                    <th>Change in cash</th>
                     <th style="width: 80px;">Commission</th>
                     <th>Actions</th>
                 </tr>
@@ -54,7 +54,7 @@
                                 <option value="SELL">SELL</option>
                             </select>
                         </td>
-                        <td><input type="date" id="date" name="date" class="form-control"></td>
+                        <td><input type="date" id="purchaseDate" name="purchaseDate" class="form-control"></td>
                         <td><input type="number" step="0.01" id="quantity" name="quantity" required
                                    class="form-control"></td>
                         <td><input type="number" step="0.01" id="price" name="price" required class="form-control"></td>
@@ -74,7 +74,7 @@
                     <td><span th:text="${transaction.id}"></span></td>
                     <td><span th:text="${transaction.ticker}"></span></td>
                     <td><span th:text="${transaction.type}"></span></td>
-                    <td><span th:text="${#dates.format(transaction.date, 'yyyy-MM-dd')}"></span></td>
+                    <td><span th:text="${#dates.format(transaction.purchaseDate, 'yyyy-MM-dd')}"></span></td>
                     <td><span th:text="${transaction.quantity}"></span></td>
                     <td><span th:text="${transaction.price}"></span></td>
                     <td><span th:text="${transaction.changeInCash}"></span></td>

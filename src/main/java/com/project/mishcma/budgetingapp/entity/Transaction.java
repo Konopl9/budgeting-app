@@ -10,6 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@Table(name = "transactions")
 public class Transaction {
 
   @Id
@@ -21,7 +22,7 @@ public class Transaction {
   @Enumerated(EnumType.STRING)
   private TransactionType type;
 
-  private Date date;
+  private Date purchaseDate;
 
   private Double quantity;
 
@@ -38,13 +39,13 @@ public class Transaction {
   public Transaction(
       String ticker,
       TransactionType type,
-      Date date,
+      Date purchaseDate,
       Double quantity,
       Double price,
       Double commission) {
     this.ticker = ticker;
     this.type = type;
-    this.date = date;
+    this.purchaseDate = purchaseDate;
     this.quantity = quantity;
     this.price = price;
     this.commission = commission;
@@ -59,8 +60,8 @@ public class Transaction {
         + '\''
         + ", type="
         + type
-        + ", date="
-        + date
+        + ", purchaseDate="
+        + purchaseDate
         + ", quantity="
         + quantity
         + ", price="
