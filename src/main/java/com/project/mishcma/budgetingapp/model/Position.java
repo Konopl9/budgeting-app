@@ -3,6 +3,8 @@ package com.project.mishcma.budgetingapp.model;
 import com.project.mishcma.budgetingapp.RestDTO.StockDataDTO;
 import com.project.mishcma.budgetingapp.dto.PortfolioDTO;
 import com.project.mishcma.budgetingapp.dto.TransactionDTO;
+
+import java.io.Serializable;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +13,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Position implements Cloneable {
+public class Position implements Serializable {
 
   private String ticker;
 

@@ -2,6 +2,8 @@ package com.project.mishcma.budgetingapp.dto;
 
 import com.project.mishcma.budgetingapp.model.Position;
 import jakarta.validation.constraints.PositiveOrZero;
+
+import java.io.Serializable;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PortfolioDTO {
+public class PortfolioDTO implements Serializable {
 
   private String name;
 

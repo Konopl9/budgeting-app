@@ -8,6 +8,7 @@ import com.project.mishcma.budgetingapp.exception.StockDataNotFoundException;
 import com.project.mishcma.budgetingapp.model.Position;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -15,11 +16,9 @@ import java.util.*;
 @Service
 public class PositionServiceImpl implements PositionService {
 
-    private final Logger logger = LoggerFactory.getLogger(PositionServiceImpl.class);
-
-    private final MarketDataService marketDataService;
-
     private static final double ZERO = 0.0;
+    private final Logger logger = LoggerFactory.getLogger(PositionServiceImpl.class);
+    private final MarketDataService marketDataService;
 
     public PositionServiceImpl(MarketDataService marketDataService) {
         this.marketDataService = marketDataService;

@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -83,7 +86,9 @@ public class PortfolioServiceImpl implements PortfolioService {
   }
 
   @Override
+  @Cacheable(cacheNames = "positions", key = "#name")
   public PortfolioDTO generatePortfolioPositionsByName(String name) {
+    System.out.println("Building it from scratch.....");
     PortfolioDTO portfolio = PortfolioMapper.toDTO(findPortfolioByName(name));
     List<Position> positions = positionService.createPositionsFromTransactions(portfolio);
     // List<Position> positions = new ArrayList<>();
@@ -130,6 +135,7 @@ public class PortfolioServiceImpl implements PortfolioService {
   }
 
   @Override
+  @CacheEvict(value="positions", allEntries=true)
   public void updateCashBalance(PortfolioDTO portfolioDTO) {
     Portfolio portfolioToUpdate = findPortfolioByName(portfolioDTO.getName());
     portfolioRepository.updateCashBalanceForPortfolio(
@@ -137,6 +143,7 @@ public class PortfolioServiceImpl implements PortfolioService {
   }
 
   @Override
+  @CacheEvict(value="positions", allEntries=true)
   public PortfolioDTO save(PortfolioDTO portfolioDTO) {
     Portfolio portfolio = PortfolioMapper.toEntity(portfolioDTO);
 
@@ -148,6 +155,7 @@ public class PortfolioServiceImpl implements PortfolioService {
   }
 
   @Override
+  @CacheEvict(value="positions", allEntries=true)
   public void deletePortfolioById(String name) {
     portfolioRepository.deleteById(name);
   }

@@ -1,6 +1,8 @@
 package com.project.mishcma.budgetingapp.RestDTO;
 
-public class StockDataDTO {
+import java.io.Serializable;
+
+public class StockDataDTO implements Serializable {
 	private String symbol;
 	private Double currentPrice;
 	private Double openingPrice;
