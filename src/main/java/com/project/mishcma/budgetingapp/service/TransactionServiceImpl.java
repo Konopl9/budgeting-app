@@ -6,14 +6,12 @@ import com.project.mishcma.budgetingapp.entity.Portfolio;
 import com.project.mishcma.budgetingapp.entity.Transaction;
 import com.project.mishcma.budgetingapp.entity.TransactionType;
 import com.project.mishcma.budgetingapp.exception.StockSymbolNotFoundException;
+import com.project.mishcma.budgetingapp.exception.TransactionSubmissionException;
 import com.project.mishcma.budgetingapp.mapper.PortfolioMapper;
 import com.project.mishcma.budgetingapp.mapper.TransactionMapper;
 import com.project.mishcma.budgetingapp.repository.TransactionRepository;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,6 +80,33 @@ public class TransactionServiceImpl implements TransactionService {
       changeInCash =
           transactionToSave.getQuantity() * transactionToSave.getPrice()
               - transactionToSave.getCommission();
+
+      List<Transaction> transactionsWithThisStock =
+          portfolio.getTransactions().stream()
+              .filter(transaction -> Objects.equals(transaction.getTicker(), symbol))
+              .filter(transaction -> !Objects.equals(transaction.getId(), transactionToSave.getId()))
+              .sorted(Comparator.comparing(Transaction::getPurchaseDate))
+              .toList();
+
+      int quantity = 0;
+      for (Transaction transaction : transactionsWithThisStock) {
+
+        if (transaction.getType() == TransactionType.BUY) {
+          quantity += transaction.getQuantity();
+        } else {
+          quantity -= transaction.getQuantity();
+        }
+      }
+
+      if (quantity < transactionToSave.getQuantity()) {
+        throw new TransactionSubmissionException(
+            "Insufficient amount of stocks to sell. Current quantity is "
+                + quantity
+                + ". "
+                + "Trying to sell "
+                + transactionToSave.getQuantity());
+      }
+
     } else {
       changeInCash =
           -(transactionToSave.getQuantity() * transactionToSave.getPrice()

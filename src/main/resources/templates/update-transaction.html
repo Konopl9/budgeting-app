@@ -23,9 +23,9 @@
                 </div>
                 <div>
                     <label for="type" class="form-label">Type:</label>
-                    <select id="type" name="type" th:value="*{type}" class="form-control">
-                        <option value="BUY" selected>BUY</option>
-                        <option value="SELL">SELL</option>
+                    <select id="type" name="type" class="form-control" th:field="*{type}">
+                        <option value="BUY" th:selected="${transaction.type == 'BUY'}">BUY</option>
+                        <option value="SELL" th:selected="${transaction.type == 'SELL'}">SELL</option>
                     </select>
                 </div>
                 <div class="mb-3">

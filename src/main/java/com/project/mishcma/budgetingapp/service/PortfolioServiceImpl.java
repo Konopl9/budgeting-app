@@ -88,10 +88,8 @@ public class PortfolioServiceImpl implements PortfolioService {
   @Override
   @Cacheable(cacheNames = "positions", key = "#name")
   public PortfolioDTO generatePortfolioPositionsByName(String name) {
-    System.out.println("Building it from scratch.....");
     PortfolioDTO portfolio = PortfolioMapper.toDTO(findPortfolioByName(name));
     List<Position> positions = positionService.createPositionsFromTransactions(portfolio);
-    // List<Position> positions = new ArrayList<>();
     portfolio.setPositions(positions);
     setCostOfInvestment(portfolio);
     setTotalCost(portfolio);

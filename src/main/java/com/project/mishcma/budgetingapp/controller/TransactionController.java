@@ -3,6 +3,7 @@ package com.project.mishcma.budgetingapp.controller;
 import com.project.mishcma.budgetingapp.dto.TransactionDTO;
 import com.project.mishcma.budgetingapp.event.TransactionResetEvent;
 import com.project.mishcma.budgetingapp.exception.StockSymbolNotFoundException;
+import com.project.mishcma.budgetingapp.exception.TransactionSubmissionException;
 import com.project.mishcma.budgetingapp.service.TransactionService;
 import jakarta.validation.Valid;
 import java.util.Objects;
@@ -88,6 +89,11 @@ public class TransactionController {
           "error", "Unable to update stock symbol " + transaction.getTicker());
       attributes.addAttribute("portfolioName", portfolioName);
       return rv;
+    } catch (TransactionSubmissionException e) {
+      attributes.addFlashAttribute(
+              "error", e.getMessage());
+      attributes.addAttribute("portfolioName", portfolioName);
+      return rv;
     }
     attributes.addFlashAttribute("success", "Successfully added!");
     attributes.addAttribute("portfolioName", portfolioName);
@@ -139,6 +145,11 @@ public class TransactionController {
       transactionService.saveTransaction(portfolioName, transaction);
     } catch (StockSymbolNotFoundException e) {
       model.addAttribute("error", "Unable to update stock symbol " + transaction.getTicker());
+      model.addAttribute("transaction", transaction);
+      model.addAttribute("portfolioName", portfolioName);
+      return "update-transaction";
+    } catch (TransactionSubmissionException e) {
+      model.addAttribute("error", e.getMessage());
       model.addAttribute("transaction", transaction);
       model.addAttribute("portfolioName", portfolioName);
       return "update-transaction";
