@@ -5,6 +5,8 @@ import jakarta.validation.constraints.PositiveOrZero;
 
 import java.io.Serializable;
 import java.util.List;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,6 +14,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class PortfolioDTO implements Serializable {
 
   private String name;
@@ -34,22 +37,14 @@ public class PortfolioDTO implements Serializable {
 
   @Override
   public String toString() {
-    return "PortfolioDTO{"
-        + "name='"
-        + name
-        + '\''
-        + ", cashBalance="
-        + cashBalance
-        + ", costOfInvestments="
-        + costOfInvestments
-        + ", totalCost="
-        + totalCost
-        + ", numberOfPositions="
-        + numberOfPositions
-        + ", transactions="
-        + transactions
-        + ", positions="
-        + positions
-        + '}';
+    return "PortfolioDTO{" +
+            "name='" + name + '\'' +
+            ", cashBalance=" + cashBalance +
+            ", costOfInvestments=" + costOfInvestments +
+            ", totalCost=" + totalCost +
+            ", numberOfPositions=" + numberOfPositions +
+            ", transactions=" + transactions +
+            ", positions=" + positions +
+            '}';
   }
 }

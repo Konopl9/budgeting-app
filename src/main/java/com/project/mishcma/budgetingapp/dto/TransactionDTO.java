@@ -1,21 +1,21 @@
 package com.project.mishcma.budgetingapp.dto;
 
+import com.project.mishcma.budgetingapp.entity.Status;
 import com.project.mishcma.budgetingapp.entity.TransactionType;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
-
 import java.io.Serializable;
 import java.util.Date;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class TransactionDTO implements Serializable {
 
   private Long id;
@@ -24,9 +24,13 @@ public class TransactionDTO implements Serializable {
 
   private TransactionType type;
 
+  private Status status;
+
   @PastOrPresent
   @DateTimeFormat(pattern = "yyyy-MM-dd")
   private Date purchaseDate;
+
+  private Double totalUnrealizedPL;
 
   @Positive private Double quantity;
 
@@ -37,6 +41,8 @@ public class TransactionDTO implements Serializable {
   @PositiveOrZero private Double commission;
 
   private Double unrealizedGainOrLoss;
+
+  private PortfolioDTO portfolioDTO;
 
   public TransactionDTO(
       String ticker,
@@ -64,8 +70,12 @@ public class TransactionDTO implements Serializable {
         + '\''
         + ", type="
         + type
+        + ", status="
+        + status
         + ", purchaseDate="
         + purchaseDate
+        + ", totalUnrealizedPL="
+        + totalUnrealizedPL
         + ", quantity="
         + quantity
         + ", price="
@@ -76,6 +86,8 @@ public class TransactionDTO implements Serializable {
         + commission
         + ", unrealizedGainOrLoss="
         + unrealizedGainOrLoss
+        + ", portfolioDTO="
+        + portfolioDTO
         + '}';
   }
 }

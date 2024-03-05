@@ -15,6 +15,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,14 +30,18 @@ public class TransactionServiceImpl implements TransactionService {
 
   private final PortfolioService portfolioService;
   private final MarketDataService marketDataService;
+  private final PortfolioMapper portfolioMapper;
+  private final TransactionMapper transactionMapper;
 
   public TransactionServiceImpl(
-      TransactionRepository transactionRepository,
-      PortfolioService portfolioService,
-      MarketDataService marketDataService) {
+          TransactionRepository transactionRepository,
+          PortfolioService portfolioService,
+          MarketDataService marketDataService, PortfolioMapper portfolioMapper, TransactionMapper transactionMapper) {
     this.transactionRepository = transactionRepository;
     this.portfolioService = portfolioService;
     this.marketDataService = marketDataService;
+    this.portfolioMapper = portfolioMapper;
+    this.transactionMapper = transactionMapper;
   }
 
   @Override
@@ -47,7 +52,7 @@ public class TransactionServiceImpl implements TransactionService {
             new Portfolio(portfolioName), pageable);
 
     return transactionPage.getContent().stream()
-        .map(TransactionMapper::toDTO)
+        .map(transactionMapper::toDTO)
         .collect(Collectors.toList());
   }
 
@@ -56,15 +61,16 @@ public class TransactionServiceImpl implements TransactionService {
     Pageable pageable = PageRequest.of(0, 5);
     Page<Transaction> transactionPage =
         transactionRepository.findByPortfolioOrderByPurchaseDateDesc(
-            PortfolioMapper.toEntity(portfolio), pageable);
-    return transactionPage.stream().map(TransactionMapper::toDTO).toList();
+            portfolioMapper.toEntity(portfolio), pageable);
+    return transactionPage.stream().map(transactionMapper::toDTO).toList();
   }
 
+  @CacheEvict(value="positions", allEntries=true)
   @Override
   public TransactionDTO saveTransaction(String portfolioName, TransactionDTO transactionDTOToSave)
       throws StockSymbolNotFoundException {
     Portfolio portfolio = portfolioService.findPortfolioByName(portfolioName);
-    Transaction transactionToSave = TransactionMapper.toEntity(transactionDTOToSave);
+    Transaction transactionToSave = transactionMapper.toEntity(transactionDTOToSave);
     transactionToSave.setPortfolio(portfolio);
     String symbol = transactionToSave.getTicker();
     if (marketDataService.getStockSymbolData(symbol).isEmpty()) {
@@ -78,7 +84,7 @@ public class TransactionServiceImpl implements TransactionService {
     double changeInCash;
     if (transactionToSave.getType() == TransactionType.SELL) {
       changeInCash =
-          transactionToSave.getQuantity() * transactionToSave.getPrice()
+          transactionToSave.getInitialQuantity() * transactionToSave.getPrice()
               - transactionToSave.getCommission();
 
       List<Transaction> transactionsWithThisStock =
@@ -92,31 +98,32 @@ public class TransactionServiceImpl implements TransactionService {
       for (Transaction transaction : transactionsWithThisStock) {
 
         if (transaction.getType() == TransactionType.BUY) {
-          quantity += transaction.getQuantity();
+          quantity += transaction.getInitialQuantity();
         } else {
-          quantity -= transaction.getQuantity();
+          quantity -= transaction.getInitialQuantity();
         }
       }
 
-      if (quantity < transactionToSave.getQuantity()) {
+      if (quantity < transactionToSave.getInitialQuantity()) {
         throw new TransactionSubmissionException(
             "Insufficient amount of stocks to sell. Current quantity is "
                 + quantity
                 + ". "
                 + "Trying to sell "
-                + transactionToSave.getQuantity());
+                + transactionToSave.getInitialQuantity());
       }
 
     } else {
       changeInCash =
-          -(transactionToSave.getQuantity() * transactionToSave.getPrice()
+          -(transactionToSave.getInitialQuantity() * transactionToSave.getPrice()
               + transactionToSave.getCommission());
     }
     transactionToSave.setChangeInCash(changeInCash);
 
-    return TransactionMapper.toDTO(transactionRepository.save(transactionToSave));
+    return transactionMapper.toDTO(transactionRepository.save(transactionToSave));
   }
 
+  @CacheEvict(value="positions", allEntries=true)
   @Override
   public int saveTransactions(String portfolioName, List<TransactionDTO> transactions) {
     List<TransactionDTO> savedTransactions = new ArrayList<>();
@@ -134,18 +141,18 @@ public class TransactionServiceImpl implements TransactionService {
 
   @Override
   public TransactionDTO findTransactionById(Long id) {
-    return TransactionMapper.toDTO(unWrapTransaction(transactionRepository.findById(id)));
+    return transactionMapper.toDTO(unWrapTransaction(transactionRepository.findById(id)));
   }
 
+  @CacheEvict(value="positions", allEntries=true)
   @Override
   public void deleteTransaction(Long id) {
     transactionRepository.deleteById(id);
-    transactionRepository.findAll().forEach(System.out::println);
   }
 
   @Override
   public List<TransactionDTO> findAll() {
-    return transactionRepository.findAll().stream().map(TransactionMapper::toDTO).toList();
+    return transactionRepository.findAll().stream().map(transactionMapper::toDTO).toList();
   }
 
   @Override

@@ -2,14 +2,15 @@ package com.project.mishcma.budgetingapp.entity;
 
 import jakarta.persistence.*;
 import java.util.Date;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import lombok.*;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name = "transactions")
 public class Transaction {
 
@@ -21,11 +22,16 @@ public class Transaction {
   private String ticker;
 
   @Enumerated(EnumType.STRING)
+  private Status status;
+
+  private Double activeQuantity;
+
+  @Enumerated(EnumType.STRING)
   private TransactionType type;
 
   private Date purchaseDate;
 
-  private Double quantity;
+  private Double initialQuantity;
 
   private Double price;
 
@@ -41,36 +47,32 @@ public class Transaction {
       String ticker,
       TransactionType type,
       Date purchaseDate,
-      Double quantity,
+      Double initialQuantity,
       Double price,
       Double commission) {
     this.ticker = ticker;
     this.type = type;
     this.purchaseDate = purchaseDate;
-    this.quantity = quantity;
+    this.initialQuantity = initialQuantity;
     this.price = price;
     this.commission = commission;
-    this.changeInCash = quantity * price - commission;
+    this.changeInCash = initialQuantity * price - commission;
   }
 
   @Override
   public String toString() {
-    return "Transaction{"
-        + "ticker='"
-        + ticker
-        + '\''
-        + ", type="
-        + type
-        + ", purchaseDate="
-        + purchaseDate
-        + ", quantity="
-        + quantity
-        + ", price="
-        + price
-        + ", changeInCash="
-        + changeInCash
-        + ", commission="
-        + commission
-        + '}';
+    return "Transaction{" +
+            "id=" + id +
+            ", ticker='" + ticker + '\'' +
+            ", status=" + status +
+            ", activeQuantity=" + activeQuantity +
+            ", type=" + type +
+            ", purchaseDate=" + purchaseDate +
+            ", initialQuantity=" + initialQuantity +
+            ", price=" + price +
+            ", changeInCash=" + changeInCash +
+            ", commission=" + commission +
+            ", portfolio=" + portfolio +
+            '}';
   }
 }

@@ -4,14 +4,14 @@ insert into portfolios (name, cash_balance) values ('My portfolio', 10000.5);
 insert into portfolios (name, cash_balance) values ('Growth portfolio', 100);
 
 -- Insert transactions for Dividend portfolio
-insert into transactions (id, ticker, type, purchase_date, quantity, price, change_in_cash, commission, portfolio_name)
+insert into transactions (id, ticker, type, purchase_date, initial_quantity, price, change_in_cash, commission, portfolio_name)
 values
     (nextval('transaction_id_seq'), 'AAPL', 'BUY', '2024-02-19', 100, 150.25, -15025, 10, 'Dividend portfolio'),
     (nextval('transaction_id_seq'), 'AMZN', 'BUY', '2024-02-20', 50, 3300.75, -165037.5, 15, 'Dividend portfolio'),
     (nextval('transaction_id_seq'), 'MSFT', 'BUY', '2024-02-22', 200, 330.50, -66100, 20, 'Dividend portfolio');
 
 -- Insert transactions for My portfolio
-insert into transactions (id, ticker, type, purchase_date, quantity, price, change_in_cash, commission, portfolio_name)
+insert into transactions (id, ticker, type, purchase_date, initial_quantity, price, change_in_cash, commission, portfolio_name)
 values
     (nextval('transaction_id_seq'), 'AAPL', 'BUY', '2024-02-19', 50, 150.25, -7512.5, 12, 'My portfolio'),
     (nextval('transaction_id_seq'), 'AMZN', 'BUY', '2024-02-20', 100, 3300.75, -330075, 15, 'My portfolio'),

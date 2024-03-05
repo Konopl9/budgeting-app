@@ -3,10 +3,12 @@ package com.project.mishcma.budgetingapp.service;
 import com.project.mishcma.budgetingapp.dto.PortfolioDTO;
 import com.project.mishcma.budgetingapp.dto.TransactionDTO;
 import com.project.mishcma.budgetingapp.entity.Portfolio;
+import com.project.mishcma.budgetingapp.entity.Transaction;
 import com.project.mishcma.budgetingapp.mapper.PortfolioMapper;
 import com.project.mishcma.budgetingapp.model.Position;
 import com.project.mishcma.budgetingapp.repository.PortfolioRepository;
 import jakarta.persistence.EntityNotFoundException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,10 +27,13 @@ public class PortfolioServiceImpl implements PortfolioService {
 
   private final PositionService positionService;
 
+  private final PortfolioMapper portfolioMapper;
+
   public PortfolioServiceImpl(
-      PortfolioRepository portfolioRepository, PositionService positionService) {
+          PortfolioRepository portfolioRepository, PositionService positionService, PortfolioMapper portfolioMapper) {
     this.portfolioRepository = portfolioRepository;
     this.positionService = positionService;
+    this.portfolioMapper = portfolioMapper;
   }
 
   private static void setNumberOfPositions(PortfolioDTO portfolio) {
@@ -88,7 +93,7 @@ public class PortfolioServiceImpl implements PortfolioService {
   @Override
   @Cacheable(cacheNames = "positions", key = "#name")
   public PortfolioDTO generatePortfolioPositionsByName(String name) {
-    PortfolioDTO portfolio = PortfolioMapper.toDTO(findPortfolioByName(name));
+    PortfolioDTO portfolio = portfolioMapper.toDTO(findPortfolioByName(name));
     List<Position> positions = positionService.createPositionsFromTransactions(portfolio);
     portfolio.setPositions(positions);
     setCostOfInvestment(portfolio);
@@ -96,6 +101,10 @@ public class PortfolioServiceImpl implements PortfolioService {
     setNumberOfPositions(portfolio);
     portfolio.getPositions().forEach(position -> setPercentOfThePortfolio(position, portfolio));
     return portfolio;
+  }
+
+  public Double calculateCurrentProfitLoss(List<Transaction> activeTransactions) {
+    return 0.0d;
   }
 
   public Map<String, Double> getPortfolioAllocation(PortfolioDTO portfolio) {
@@ -143,13 +152,13 @@ public class PortfolioServiceImpl implements PortfolioService {
   @Override
   @CacheEvict(value="positions", allEntries=true)
   public PortfolioDTO save(PortfolioDTO portfolioDTO) {
-    Portfolio portfolio = PortfolioMapper.toEntity(portfolioDTO);
+    Portfolio portfolio = portfolioMapper.toEntity(portfolioDTO);
 
     if (portfolio.getCashBalance() == null) {
       portfolio.setCashBalance(DEFAULT_CASH_BALANCE);
     }
 
-    return PortfolioMapper.toDTO(portfolioRepository.save(portfolio));
+    return portfolioMapper.toDTO(portfolioRepository.save(portfolio));
   }
 
   @Override

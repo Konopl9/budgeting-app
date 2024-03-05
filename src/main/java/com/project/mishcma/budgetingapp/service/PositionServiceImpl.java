@@ -30,14 +30,17 @@ public class PositionServiceImpl implements PositionService {
         if (transactions.isEmpty()) {
             return new ArrayList<>();
         }
+
+        // Ensure that transactions is mutable by creating a new ArrayList
+        List<TransactionDTO> mutableTransactions = new ArrayList<>(transactions);
         // Sort transactions by date to preserve the order
-        transactions.sort(Comparator.comparing(TransactionDTO::getPurchaseDate));
+        mutableTransactions.sort(Comparator.comparing(TransactionDTO::getPurchaseDate));
 
         Map<String, List<TransactionDTO>> tickerToTransactionMap = new HashMap<>();
         List<Position> calculatedPositions = new ArrayList<>();
 
         // Populate the map
-        for (TransactionDTO transaction : transactions) {
+        for (TransactionDTO transaction : mutableTransactions) {
             String ticker = transaction.getTicker();
             List<TransactionDTO> tickerSpecificTransactions = tickerToTransactionMap.computeIfAbsent(ticker, k -> new ArrayList<>());
             tickerSpecificTransactions.add(transaction);
